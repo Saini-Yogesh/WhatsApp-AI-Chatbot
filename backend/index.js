@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const connectToMongoDB = require("./connect");
 const userRoutes = require("./routes/userRoutes");
+const flowRoutes = require("./routes/flowRoutes");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
@@ -25,6 +26,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient = twilio(accountSid, authToken);
 
 app.use("/api/users", userRoutes);
+app.use("/api/flows", flowRoutes);
 
 // Webhook to receive WhatsApp messages
 app.post("/webhook", async (req, res) => {

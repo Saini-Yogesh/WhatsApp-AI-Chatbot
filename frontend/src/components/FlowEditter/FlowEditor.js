@@ -15,6 +15,7 @@ const nodeTypes = { custom: CustomNode };
 const FlowEditor = () => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+    const [flowId, setFlowId] = useState("67e7c4d98857f7763699a53d");
 
     const onNodesChange = useCallback(
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -67,10 +68,9 @@ const FlowEditor = () => {
             )
         );
     };
-
     const deleteNode = (id) => {
         setNodes((nds) => nds.filter((node) => node.id !== id));
-        setEdges((eds) => eds.filter((edge) => !edge.source.startsWith(id) && !edge.target.startsWith(id)));
+        setEdges((eds) => eds.filter((edge) => edge.source !== id && edge.target !== id));
     };
 
     const onConnect = (params) => {
@@ -86,15 +86,22 @@ const FlowEditor = () => {
     };
 
     const saveFlow = async () => {
-        const flowData = { nodes, edges };
+        const flowData = { id: flowId, nodes, edges };
+        console.log("Saving flow:", flowData);
 
         try {
-            await fetch("http://localhost:5000/api/flows/save", {
+            const res = await fetch("http://localhost:8000/api/flows/save", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(flowData)
             });
-            alert("Flow saved successfully!");
+
+            const responseData = await res.json();
+            if (responseData.id) {
+                setFlowId(responseData.id); // Store ID for future updates
+            }
+
+            alert(responseData.message);
         } catch (error) {
             console.error("Error saving flow:", error);
         }
@@ -104,11 +111,24 @@ const FlowEditor = () => {
     useEffect(() => {
         const fetchFlow = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/flows/get");
+                const res = await fetch("http://localhost:8000/api/flows/get");
                 const data = await res.json();
-                if (data.length > 0) {
-                    setNodes(data[0].nodes);
-                    setEdges(data[0].edges);
+
+                if (data && data.nodes) {
+                    // Re-assign event handlers
+                    const updatedNodes = data.nodes.map((node) => ({
+                        ...node,
+                        data: {
+                            ...node.data,
+                            onDelete: () => deleteNode(node.id), // Re-add onDelete function
+                            onChange: (text) => updateNodeLabel(node.id, text),
+                            onResponseChange: (index, text) => updateResponse(node.id, index, text),
+                        }
+                    }));
+
+                    setNodes(updatedNodes);
+                    setEdges(data.edges);
+                    setFlowId(data._id); // Store document ID
                 }
             } catch (error) {
                 console.error("Error fetching flow:", error);
