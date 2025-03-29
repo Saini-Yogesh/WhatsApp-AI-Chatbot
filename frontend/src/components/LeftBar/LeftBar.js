@@ -1,30 +1,36 @@
 import React, { useState, useEffect } from "react";
 import "../LeftBar/LeftBar.css";
 
-const LeftBar = () => {
-  const [businessId, setBusinessId] = useState(localStorage.getItem("businessId") || "");
+const LeftBar = ({ flow_id, business_id }) => {
+  const [businessId, setBusinessId] = useState(business_id);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [aiResponses, setAiResponses] = useState(JSON.parse(localStorage.getItem("aiResponses")) || []);
+  const [aiResponses, setAiResponses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchAiResponses = async (id) => {
+  const fetchBusinessDetails = async (id) => {
     try {
+      setLoading(true);
       const response = await fetch(`http://localhost:8000/api/users/${id}`);
-      if (!response.ok) throw new Error("Failed to fetch AI responses");
+      if (!response.ok) throw new Error("Failed to fetch business details");
 
-      const data = await response.json();
+      let data = await response.json();
+      data = data.user;
+
+      setName(data.businessName || "");
+      setDescription(data.businessDescription || "");
       setAiResponses(data.aiResponses || []);
-      localStorage.setItem("aiResponses", JSON.stringify(data.aiResponses || []));
+      setLoading(false);
     } catch (err) {
-      setError("Error fetching AI responses. Please try again.");
+      setError("Error fetching business details. Please try again.");
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (businessId) {
-      fetchAiResponses(businessId);
+      fetchBusinessDetails(businessId);
     }
   }, [businessId]);
 
@@ -32,25 +38,27 @@ const LeftBar = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setAiResponses([]);
 
     try {
       const response = await fetch("http://localhost:8000/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ businessName: name, businessDescription: description }),
+        body: JSON.stringify({
+          id: businessId, // Use "id" to match backend expectation
+          businessName: name,
+          businessDescription: description,
+        }),
       });
 
-      if (!response.ok) throw new Error("Failed to submit business details");
+      if (!response.ok) {
+        throw new Error("Failed to submit business details");
+      }
 
       const data = await response.json();
-      setBusinessId(data.user._id);
-      localStorage.setItem("businessId", data.user._id);
 
-      if (data.user._id) {
-        await fetchAiResponses(data.user._id);
-      } else {
-        setError("User ID not found. Could not fetch AI responses.");
+      if (!businessId && data.user?._id) {
+        // If a new business was registered, store the new businessId
+        setBusinessId(data.user._id);
       }
     } catch (err) {
       setError(err.message || "Submission failed. Please try again.");
@@ -58,6 +66,8 @@ const LeftBar = () => {
       setLoading(false);
     }
   };
+
+
 
   return (
     <div className="left-bar">
@@ -88,7 +98,7 @@ const LeftBar = () => {
         <div className="ai-responses">
           <h3>AI Responses</h3>
           <ul>
-            {aiResponses.map((response, index) => (
+            {aiResponses?.map?.((response, index) => (
               <li key={index}>
                 <strong>Q:</strong> {response.question}
                 <br />

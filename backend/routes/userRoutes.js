@@ -1,9 +1,7 @@
 const express = require("express");
 const {
   registerBusiness,
-  updateBusiness,
-  getAllBusinesses,
-  getAiResponses,
+  getBusiness,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -12,12 +10,6 @@ const router = express.Router();
 router.post("/register", registerBusiness);
 
 // Fetch AI responses by business ID
-router.get("/:id", getAiResponses);
-
-// Update business details
-router.put("/update/:id", updateBusiness);
-
-// Get all businesses
-router.get("/", getAllBusinesses);
+router.get("/:id", getBusiness);
 
 module.exports = router;

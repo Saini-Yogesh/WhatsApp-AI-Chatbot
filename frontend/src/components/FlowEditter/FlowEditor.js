@@ -11,12 +11,11 @@ import CustomNode from "./CustomNode";
 import "./FlowEditor.css";
 
 const nodeTypes = { custom: CustomNode };
-// const flowId = process.env.FLOW_ID;
 
-const FlowEditor = () => {
+const FlowEditor = ({ flow_id, business_id }) => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
-    const [flowId, setFlowId] = useState(process.env.FLOW_ID);
+    const [flowId, setFlowId] = useState(flow_id);
 
     const onNodesChange = useCallback(
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -75,7 +74,7 @@ const FlowEditor = () => {
     };
 
     const onConnect = (params) => {
-        const { sourceHandle, target } = params;
+        const { sourceHandle } = params;
 
         // If connecting to a full box, allow it (target should be a full node)
         if (!sourceHandle) {
@@ -88,7 +87,7 @@ const FlowEditor = () => {
 
     const saveFlow = async () => {
         const flowData = { id: flowId, nodes, edges };
-        console.log("Saving flow:", flowData);
+        // console.log("Saving flow:", flowData);
 
         try {
             const res = await fetch("http://localhost:8000/api/flows/save", {
@@ -108,13 +107,12 @@ const FlowEditor = () => {
         }
     };
 
-
     useEffect(() => {
         const fetchFlow = async () => {
+            if (!flowId) return;
             try {
-                const res = await fetch("http://localhost:8000/api/flows/get");
+                const res = await fetch(`http://localhost:8000/api/flows/get/${flowId}`);
                 const data = await res.json();
-
                 if (data && data.nodes) {
                     // Re-assign event handlers
                     const updatedNodes = data.nodes.map((node) => ({

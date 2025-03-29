@@ -1,6 +1,7 @@
 const express = require("express");
 const Flow = require("../models/Flow");
 const router = express.Router();
+const mongoose = require("mongoose");
 
 // Save or update flow
 router.post("/save", async (req, res) => {
@@ -30,13 +31,22 @@ router.post("/save", async (req, res) => {
 });
 
 // Fetch the latest saved flow
-router.get("/get", async (req, res) => {
+router.get("/get/:id", async (req, res) => {
     try {
-        const flow = await Flow.findOne(); // Fetch any existing flow
-        if (!flow) return res.status(404).json({ message: "No flow found" });
+        const { id } = req.params; // Extract from req.params, NOT req.body
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid Flow ID" });
+        }
+
+        const flow = await Flow.findById(id);
+        if (!flow) {
+            return res.status(404).json({ message: "Flow not found" });
+        }
 
         res.status(200).json(flow);
     } catch (err) {
+        console.error("Error fetching flow:", err);
         res.status(500).json({ error: err.message });
     }
 });
