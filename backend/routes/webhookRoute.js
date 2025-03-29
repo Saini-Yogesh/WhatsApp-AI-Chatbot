@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
         services: "We offer AI chatbots, automation services, and much more!",
     };
 
-    let reply = "Now I am working";
+    let reply = "Here Will be replay according to the user response";
 
     // Check predefined responses
     if (predefinedQA[message.toLowerCase()]) {
