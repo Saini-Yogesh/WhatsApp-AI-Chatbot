@@ -6,12 +6,8 @@ import "../pages/Home.css";
 export default function Home() {
   return (
     <div className="home-container">
-      <div className="left-bar">
-        <LeftBar />
-      </div>
-      <div className="flow-editor">
-        <FlowEditor />
-      </div>
+      <LeftBar />
+      <FlowEditor />
     </div>
   );
 }

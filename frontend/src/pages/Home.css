@@ -1,5 +1,4 @@
 /* Home.css */
-
 .home-container {
   display: flex;
   height: 100vh; /* Full height */
@@ -7,19 +6,8 @@
   overflow: hidden; /* Prevents scrolling */
 }
 
-.left-bar {
-  width: 400px; /* Adjust as needed */
-  background-color: #0f4c36; /* Sidebar background */
-  color: white;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
-
 .flow-editor {
   flex-grow: 1; /* Takes remaining space */
   background-color: #fff6f4; /* Editor background */
-  padding: 20px;
   overflow: auto;
 }

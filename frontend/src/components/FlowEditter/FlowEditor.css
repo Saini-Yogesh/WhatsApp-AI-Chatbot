@@ -7,6 +7,7 @@ body {
 
 .flow-container {
   height: 90vh;
+  width: calc(100% - 400px) !important;
 }
 
 .sidebar {
