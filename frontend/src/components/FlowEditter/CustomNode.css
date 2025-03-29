@@ -1,0 +1,103 @@
+.node-box {
+  position: relative;
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width: 220px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.node-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.node-title {
+  font-weight: bold;
+  flex-grow: 1;
+}
+
+.question-input {
+  width: 90%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.response-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.response-option {
+  position: relative;
+}
+
+.response-box {
+  position: relative;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0;
+  width: 100%;
+}
+
+.response-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  background-color: transparent;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  border-radius: 4px;
+}
+
+.response-input:focus {
+  background-color: #fff;
+  box-shadow: 0 0 0 2px #4dabf7;
+  width: 90%;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #d32f2f;
+  padding: 0;
+  margin-left: 8px;
+}
+
+/* Styling for the handles */
+.main-handle {
+  width: 10px;
+  height: 10px;
+  background-color: #1976d2;
+  left: -5px;
+}
+
+.response-handle {
+  width: 8px;
+  height: 8px;
+  background-color: #388e3c;
+  right: -4px;
+  top: 50%;
+}
+
+/* Make sure handles are above the node content */
+.react-flow__handle {
+  z-index: 10;
+}
