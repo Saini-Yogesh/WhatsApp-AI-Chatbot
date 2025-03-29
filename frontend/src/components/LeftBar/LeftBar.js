@@ -60,6 +60,7 @@ const LeftBar = ({ flow_id, business_id }) => {
         // If a new business was registered, store the new businessId
         setBusinessId(data.user._id);
       }
+      fetchBusinessDetails(businessId);
     } catch (err) {
       setError(err.message || "Submission failed. Please try again.");
     } finally {
@@ -67,21 +68,19 @@ const LeftBar = ({ flow_id, business_id }) => {
     }
   };
 
-
-
   return (
     <div className="left-bar">
-      <h2>Business Details</h2>
+      <h2>Chatbot  Details</h2>
       <form onSubmit={handleSubmit} className="business-form">
         <input
           type="text"
-          placeholder="Business Name"
+          placeholder="Chatbot name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
         <textarea
-          placeholder="Business Description"
+          placeholder="Chatbot description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
@@ -95,31 +94,29 @@ const LeftBar = ({ flow_id, business_id }) => {
       {error && <p className="error">{error}</p>}
 
       {aiResponses.length > 0 && (
-  <div className="ai-responses">
-    <h3>Chatbot Flow</h3>
-    <ul>
-      {aiResponses?.map?.((response, index) => (
-        <li key={index}>
-          {response.question ? (
-            <>
-              <strong>Q:</strong> {response.question}
-              <br />
-              <strong>A:</strong> {response.answer}
-            </>
-          ) : (
-            <>
-              <strong>Bot:</strong> {response.bot}
-              <br />
-              <strong>Options:</strong> {response.options?.join(" | ")}
-            </>
-          )}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-
-
+        <div className="ai-responses">
+          <h3>Chatbot Flow</h3>
+          <ul>
+            {aiResponses?.map?.((response, index) => (
+              <li key={index}>
+                {response.question ? (
+                  <>
+                    <strong>Q:</strong> {response.question}
+                    <br />
+                    <strong>A:</strong> {response.answer}
+                  </>
+                ) : (
+                  <>
+                    <strong>Bot:</strong> {response.bot}
+                    <br />
+                    <strong>Options:</strong> {response.options?.join(" | ")}
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

@@ -68,6 +68,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
             )
         );
     };
+
     const deleteNode = (id) => {
         setNodes((nds) => nds.filter((node) => node.id !== id));
         setEdges((eds) => eds.filter((edge) => edge.source !== id && edge.target !== id));
