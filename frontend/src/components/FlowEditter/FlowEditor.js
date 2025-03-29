@@ -11,11 +11,12 @@ import CustomNode from "./CustomNode";
 import "./FlowEditor.css";
 
 const nodeTypes = { custom: CustomNode };
+// const flowId = process.env.FLOW_ID;
 
 const FlowEditor = () => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
-    const [flowId, setFlowId] = useState("67e7d8cdf022d822836aaea5");
+    const [flowId, setFlowId] = useState(process.env.FLOW_ID);
 
     const onNodesChange = useCallback(
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
