@@ -1,4 +1,4 @@
-// ngrok http 8000
+// ngrok http 7000
 const express = require("express");
 const connectToMongoDB = require("./connect");
 const cors = require("cors");
@@ -27,5 +27,5 @@ app.use("/api/flows", flowRoutes);
 app.use("/webhook", webhookRoutes);
 
 // Start server
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 7000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

@@ -1,78 +1,107 @@
 const express = require("express");
 const twilio = require("twilio");
+const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 const router = express.Router();
 
+// Twilio Credentials
 const accountSid = process.env.TWILIO_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient = twilio(accountSid, authToken);
 
+// console.log("TWILIO_SID:", process.env.TWILIO_SID);
+// console.log("TWILIO_AUTH_TOKEN:", process.env.TWILIO_AUTH_TOKEN);
+// MongoDB Credentials
+const mongoURI = process.env.MONGO_URI;
+const dbName = "helloo"; // ✅ Change to "helloo"
+const collectionName = "flows"; // ✅ Change to "flows"
+const flowDocumentId = "67e81b9cf022d822836aaebc"; // ✅ ObjectId in MongoDB
+
+let db;
+
+// Connect to MongoDB
+MongoClient.connect(mongoURI)
+    .then(client => {
+        db = client.db(dbName);
+        console.log(`✅ Connected to MongoDB - Database: ${dbName}`);
+    })
+    .catch(error => console.error("❌ MongoDB connection error:", error));
+
+async function getNextQuestion(userId, userResponse) {
+    try {
+        // Fetch the flow using ObjectId
+        const flow = await db.collection(collectionName).findOne({ _id: new ObjectId(flowDocumentId) });
+
+        if (!flow) {
+            console.error("❌ Flow document not found in MongoDB.");
+            return { question: "Sorry, something went wrong retrieving the flow.", responses: [] };
+        }
+
+        const userState = await db.collection("user_states").findOne({ userId });
+        let currentNodeId = userState?.currentNodeId || "node_1";
+
+        const currentNode = flow.nodes.find(node => node.id === currentNodeId);
+        if (!currentNode) return { question: "Sorry, I couldn't understand that.", responses: [] };
+
+        const responseIndex = currentNode.data.responses.indexOf(userResponse);
+        if (responseIndex === -1) return { question: "Please choose a valid option.", responses: currentNode.data.responses };
+
+        const edge = flow.edges.find(e => e.source === currentNodeId && e.sourceHandle === `response-${responseIndex}`);
+        if (!edge) return { question: "I couldn't find the next step.", responses: [] };
+
+        const nextNodeId = edge.target;
+        const nextNode = flow.nodes.find(node => node.id === nextNodeId);
+
+        await db.collection("user_states").updateOne(
+            { userId },
+            { $set: { currentNodeId: nextNodeId } },
+            { upsert: true }
+        );
+
+        return nextNode
+            ? { question: nextNode.data.label, responses: nextNode.data.responses }
+            : { question: "Sorry, something went wrong.", responses: [] };
+    } catch (error) {
+        console.error("❌ Error fetching flow document:", error);
+        return { question: "Error retrieving the flow.", responses: [] };
+    }
+}
+
 // Webhook to receive WhatsApp messages
 router.post("/", async (req, res) => {
-    console.log("Webhook called");
     const message = req.body.Body.trim();
     const sender = req.body.From;
 
-    console.log(`Received message: ${message} from ${sender}`);
-
-    // Predefined Q&A
-    const predefinedQA = {
-        hello: "Hi! How can I assist you today?",
-        pricing:
-            "Our pricing plans start from $10/month. Let me know if you need details.",
-        services: "We offer AI chatbots, automation services, and much more!",
-    };
-
-    let reply = "Here Will be replay according to the user response";
-
-    // Check predefined responses
-    if (predefinedQA[message.toLowerCase()]) {
-        reply = predefinedQA[message.toLowerCase()];
-    } else {
-        // Generate AI response
-        try {
-            const API_KEY = process.env.GEMINI_API_KEY;
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
-
-            const payload = {
-                contents: [{ parts: [{ text: message }] }],
-            };
-
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            const data = await response.json();
-            // console.log(data)
-            reply =
-                data.candidates?.[0]?.content?.parts?.[0]?.text ||
-                "Sorry, I couldn't understand that.";
-        } catch (error) {
-            console.error("Error generating AI response:", error);
-            reply = "Sorry, I am facing some issues right now.";
-        }
+    let response;
+    try {
+        response = await getNextQuestion(sender, message);
+    } catch (error) {
+        console.error("❌ Error processing flow:", error);
+        response = { question: "Sorry, I encountered an issue.", responses: [] };
     }
 
-    // console.log(reply);
-    // Send response via Twilio WhatsApp
-    twilioClient.messages
-        .create({
-            body: reply,
-            from: "whatsapp:+14155238886", // Twilio Sandbox Number
-            to: sender,
-        })
-        .then((message) => console.log(`Sent message SID: ${message.sid}`))
-        .catch((error) => console.error("Error sending message:", error));
-
-    // const twiml = new twilio.twiml.MessagingResponse();
-    // res.type('text/xml').send(twiml.toString());
-
-    const twiml = new twilio.twiml.MessagingResponse();
-    twiml.message(reply);
-    res.type("text/xml").send(twiml.toString());
+    // Send WhatsApp Interactive Buttons
+    if (response.responses.length > 0) {
+        try {
+            twilioClient.messages
+                .create({
+                    from: "whatsapp:+14155238886", // Twilio Sandbox Number
+                    to: sender,
+                    body: `${response.question}\n\nOptions: ${response.responses.join(", ")}`, // ✅ Send text with options
+                })
+                .then(message => console.log(`✅ Text Message Sent: ${message.sid}`))
+                .catch(error => {
+                    console.error("❌ Error sending text message:", error);
+                });
+        } catch (error) {
+            console.error("❌ Critical Error (Skipping Twilio Message):", error);
+        }
+    }
+    else {
+        console.error("❌ No valid responses, skipping Twilio message.");
+    }
+    res.send({ reply: response.question, Responses: response.responses });
 });
 
 module.exports = router;

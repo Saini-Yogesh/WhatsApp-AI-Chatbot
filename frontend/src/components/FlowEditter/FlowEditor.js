@@ -90,7 +90,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
         // console.log("Saving flow:", flowData);
 
         try {
-            const res = await fetch("http://localhost:8000/api/flows/save", {
+            const res = await fetch("http://localhost:7000/api/flows/save", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(flowData)
@@ -101,7 +101,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
                 setFlowId(responseData.id); // Store ID for future updates
             }
 
-            alert(responseData.message);
+            // alert(responseData.message);
         } catch (error) {
             console.error("Error saving flow:", error);
         }
@@ -111,7 +111,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
         const fetchFlow = async () => {
             if (!flowId) return;
             try {
-                const res = await fetch(`http://localhost:8000/api/flows/get/${flowId}`);
+                const res = await fetch(`http://localhost:7000/api/flows/get/${flowId}`);
                 const data = await res.json();
                 if (data && data.nodes) {
                     // Re-assign event handlers
@@ -135,7 +135,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
         };
 
         fetchFlow();
-    }, []);
+    }, [flowId]);
 
 
     return (

@@ -12,7 +12,7 @@ const LeftBar = ({ flow_id, business_id }) => {
   const fetchBusinessDetails = async (id) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/users/${id}`);
+      const response = await fetch(`http://localhost:7000/api/users/${id}`);
       if (!response.ok) throw new Error("Failed to fetch business details");
 
       let data = await response.json();
@@ -40,7 +40,7 @@ const LeftBar = ({ flow_id, business_id }) => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8000/api/users/register", {
+      const response = await fetch("http://localhost:7000/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
