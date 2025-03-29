@@ -8,21 +8,23 @@ async function generateAIResponses(businessName, businessDescription) {
     const API_KEY = process.env.GEMINI_API_KEY;
     if (!API_KEY) {
       console.error("Missing GEMINI_API_KEY in environment variables.");
-      return []; // Return empty array to avoid breaking the registration flow
+      return [];
     }
 
-    // Log only the first few characters of the key to verify it's being read
-    // console.log(`Using API key starting with: ${API_KEY.substring(0, 5)}...`);
-
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
-
-    // console.log("🔗 API URL:", url);
 
     const payload = {
       contents: [
         {
           parts: [
-            { text: `Generate 5 FAQs for ${businessName}, which specializes in ${businessDescription}. Format each FAQ as 'Q: [question] A: [answer]'` },
+            {
+              text: `Generate a structured chatbot flow for ${businessName}, specializing in ${businessDescription}. 
+              Each step should be a short question with three selectable options only. 
+              Format strictly as:
+              Bot: [Short question]
+              Options: Option 1 | Option 2 | Option 3
+              No explanations, introductions, or additional text—only the structured output.`,
+            },
           ],
         },
       ],
@@ -32,55 +34,31 @@ async function generateAIResponses(businessName, businessDescription) {
       headers: { "Content-Type": "application/json" },
     });
 
-    // console.log("✅ API Response:", JSON.stringify(response.data, null, 2));
+    const responseText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
 
-    const responseText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+if (responseText) {
+  const chatbotFlow = [];
+  const flowMatches = responseText.split(/(?=Bot:)/g).filter(item => item.trim());
 
-    // Parse the text into an array of Q&A objects
-    if (responseText) {
-      // Basic parsing assuming format "Q: [question] A: [answer]"
-      const faqArray = [];
-      const faqMatches = responseText.split(/\d+\.\s+/g).filter(item => item.trim());
+  for (const step of flowMatches) {
+    const botMatch = step.match(/Bot:(.+)/i);
+    const optionsMatch = step.match(/Options:(.+)/i);
 
-      // If the split didn't work, try to handle it as a single block
-      if (faqMatches.length === 0 && responseText.includes('Q:') && responseText.includes('A:')) {
-        const qaPairs = responseText.split(/(?=Q:)/g).filter(qa => qa.trim());
-
-        for (const qa of qaPairs) {
-          const qMatch = qa.match(/Q:([^A]+)/i);
-          const aMatch = qa.match(/A:(.+)(?:\n|$)/is);
-
-          if (qMatch && aMatch) {
-            faqArray.push({
-              question: qMatch[1].trim(),
-              answer: aMatch[1].trim()
-            });
-          }
-        }
-      } else {
-        // Process the matches from the numbered format
-        for (const faq of faqMatches) {
-          const qMatch = faq.match(/Q:([^A]+)/i);
-          const aMatch = faq.match(/A:(.+)(?:\n|$)/is);
-
-          if (qMatch && aMatch) {
-            faqArray.push({
-              question: qMatch[1].trim(),
-              answer: aMatch[1].trim()
-            });
-          }
-        }
-      }
-
-      return faqArray;
+    if (botMatch && optionsMatch) {
+      chatbotFlow.push({
+        bot: botMatch[1].trim(),
+        options: optionsMatch[1].split("|").map(opt => opt.trim()), // Ensure options are properly split
+      });
     }
+  }
 
-    return []; // Return empty array if no valid response
+  return chatbotFlow;
+}
+
+
+    return [];
   } catch (error) {
-    console.error(
-      `❌ Error generating AI responses: ${error.response?.status || "Unknown Status"
-      } - ${error.response?.data?.error?.message || error.message}`
-    );
+    console.error(`❌ Error generating chatbot flow: ${error.message}`);
     return [];
   }
 }
