@@ -2,7 +2,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: #f4f4f4;
+  background: #ffa726;
 }
 
 .flow-container {
@@ -20,14 +20,19 @@ body {
 .flow-editor {
   flex: 1;
   height: 100%;
-  background: white;
+  background: #1a1a1a; /* Darker background for the node area */
 }
+
+.react-flow__background {
+  background: #1a1a1a !important; /* Ensure background inside ReactFlow is also dark */
+}
+
 
 /* Sidebar Buttons */
 .btn {
   width: 200px;
   padding: 12px;
-  background: #007bff;
+  background: #029354;
   border: none;
   color: white;
   font-size: 14px;
@@ -38,7 +43,7 @@ body {
 }
 
 .btn:hover {
-  background: #0056b3;
+  background: #029354;
   transform: scale(1.05);
 }
 

@@ -4,6 +4,7 @@
   height: 100vh; /* Full height */
   width: 100vw; /* Full width */
   overflow: hidden; /* Prevents scrolling */
+  background-color: #0f4c36;
 }
 
 .flow-editor {
