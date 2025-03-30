@@ -2,6 +2,8 @@
 
 This project is an AI-powered chatbot for WhatsApp using Twilio API and Gemini AI. It automates responses based on structured conversation flows.
 
+![image](https://github.com/user-attachments/assets/d68aab6f-ee74-4d16-8bce-4fb3fffe6c9e)
+
 ## Installation & Setup Guide
 
 ### 1. Clone the Repository
@@ -83,3 +85,23 @@ Ensure the following scripts are included in your `package.json`:
     "dev": "concurrently \"npm run backend\" \"npm run frontend\""
 }
 ```
+
+## Contributors
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Saini-Yogesh">
+        <img src="https://github.com/Saini-Yogesh.png" width="120" height="120" style="border-radius: 50%;" /><br>
+        <b>Saini-Yogesh</b>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Sahil7811">
+        <img src="https://github.com/Sahil7811.png" width="120" height="120" style="border-radius: 50%;" /><br>
+        <b>Sahil7811</b>
+      </a>
+    </td>
+  </tr>
+</table>
+
