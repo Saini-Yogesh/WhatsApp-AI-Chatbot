@@ -7,12 +7,14 @@ This project is an AI-powered chatbot for WhatsApp using Twilio API and Gemini A
 ## Installation & Setup Guide
 
 ### 1. Clone the Repository
+
 ```sh
 git clone https://github.com/Saini-Yogesh/WhatsApp-AI-Chatbot.git
 cd WhatsApp-AI-Chatbot
 ```
 
 ### 2. Setup Environment Variables
+
 Create a `.env` file in the root directory and add the following:
 
 ```env
@@ -25,6 +27,7 @@ GEMINI_API_KEY=your_gemini_api_key
 ⚠️ **Security Note:** Keep your API keys private and do not share them.
 
 ### 3. Install Dependencies
+
 Install dependencies for the main project:
 
 ```sh
@@ -46,36 +49,44 @@ npm install
 ```
 
 ### 4. Run the Application
+
 You can start the backend and frontend separately or together using the provided scripts.
 
 #### Start the Backend
+
 ```sh
 npm run backend
 ```
 
 #### Start the Frontend
+
 ```sh
 npm run frontend
 ```
 
 #### Start Both Backend & Frontend Concurrently
+
 ```sh
 npm run dev
 ```
 
 ### 5. Access the Application
+
 - **Backend API:** [http://localhost:8000](http://localhost:8000)
 - **Frontend:** [http://localhost:3000](http://localhost:3000) (Default React Port)
 
 ## Features
+
 ✅ AI-driven structured conversations  
 ✅ WhatsApp automation with Twilio API  
-✅ Real-time chat processing  
+✅ Real-time chat processing
 
 ## Contributing
+
 Feel free to fork and submit pull requests! 🚀
 
 ## Scripts
+
 Ensure the following scripts are included in your `package.json`:
 
 ```json
@@ -90,13 +101,13 @@ Ensure the following scripts are included in your `package.json`:
 
 <table>
   <tr>
-    <td align="center">
+    <td text-align="center">
       <a href="https://github.com/Saini-Yogesh">
         <img src="https://github.com/Saini-Yogesh.png" width="120" height="120" style="border-radius: 50%;" /><br>
         <b>Saini-Yogesh</b>
       </a>
     </td>
-    <td align="center">
+    <td text-align="center">
       <a href="https://github.com/Sahil7811">
         <img src="https://github.com/Sahil7811.png" width="120" height="120" style="border-radius: 50%;" /><br>
         <b>Sahil7811</b>
@@ -104,4 +115,3 @@ Ensure the following scripts are included in your `package.json`:
     </td>
   </tr>
 </table>
-
