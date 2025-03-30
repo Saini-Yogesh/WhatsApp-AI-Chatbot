@@ -144,7 +144,7 @@ const LeftBar = ({ flow_id, business_id }) => {
 
       {aiResponses.length > 0 && (
         <div className="ai-responses">
-          <h3>Chatbot Flow</h3>
+          <h3>Recommended AI Flow</h3>
           <ul>
             {aiResponses?.map?.((response, index) => (
               <li key={index}>
