@@ -1,2 +1,0 @@
-netstat -ano | findstr :3000
-netstat -ano | findstr :7000

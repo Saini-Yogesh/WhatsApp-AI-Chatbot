@@ -1,0 +1,126 @@
+/**
+ * Generates a structured question flow using Gemini API.
+ * @param {string} businessName - Name of the business.
+ * @param {string} businessType - Type of business.
+ * @returns {Promise<Object>} - Generated question flow.
+*/
+const apiKey = "AIzaSyDaHf2W5ts4EAnC3K7aiXcDKCk7AwpgzHE"; // Ensure this is set in your environment variables
+
+async function generateQuestionFlow(businessName, businessType) {
+    if (!apiKey) {
+        console.error("Error: Missing GEMINI_API_KEY in environment variables.");
+        return null;
+    }
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+    const payload = {
+        contents: [
+            {
+                role: "user",
+                parts: [
+                    {
+                        text: `Generate a structured question flow for a WhatsApp AI Form Builder based on the following details:
+                        - Business Name: ${businessName}
+                        - Business Type: ${businessType}
+
+                        Each question must have fixed responses
+                        Responses can connect to an existing node or a new node, ensuring a logical flow.
+                        at max 7 Nodes
+                        
+                        Format the response as valid JSON:
+                        {
+                            "nodes": [
+                                {
+                                    "id": "unique_id_1",
+                                    "question": "First question?",
+                                    "PossibleresponsesForThisQuestion": {
+                                        "yes": "unique_id_2",
+                                        "no": "unique_id_3",
+                                        "other": "unique_id_4"
+                                    }
+                                }
+                            ],
+                            "edges": [
+                                { "from": "unique_id_1", 
+                                  "response": "yes", 
+                                  "to": "unique_id_2" 
+                                }
+                        }`
+                    }
+                ]
+            }
+        ]
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (!data || !data.candidates || !data.candidates[0]?.content?.parts[0]?.text) {
+            console.error("Error: Invalid API response", JSON.stringify(data, null, 2));
+            return null;
+        }
+
+        const textResponse = data.candidates[0].content.parts[0].text.trim();
+        const jsonText = textResponse.replace(/```json|```/g, "").trim(); // Remove markdown code block if present
+        return JSON.parse(jsonText);
+    } catch (error) {
+        console.error("Error generating question flow:", error.message);
+        return null;
+    }
+}
+
+async function getFormattedNodes(businessName, businessType) {
+    const rawNodes = await generateQuestionFlow(businessName, businessType);
+
+    // ✅ Format nodes
+    const formattedNodes = rawNodes.nodes.map((node, index) => ({
+        id: node.id,
+        type: "custom",
+        position: { x: Math.random() * 400, y: index * 200 }, // Randomized position
+        data: {
+            id: node.id,
+            label: node.question, // Store the exact question
+            responses: Object.keys(node.PossibleresponsesForThisQuestion) // ✅ Actual responses (keys)
+        },
+        width: 243,
+        height: 217,
+        selected: false,
+        positionAbsolute: { x: Math.random() * 400, y: index * 200 },
+        dragging: false
+    }));
+
+    // ✅ Format edges
+    const formattedEdges = rawNodes.nodes.flatMap((node) =>
+        Object.entries(node.PossibleresponsesForThisQuestion).map(([response, targetNodeId], index) => ({
+            source: node.id, // Current node
+            sourceHandle: `response-${index}`, // Handle for connection
+            target: targetNodeId, // Target node
+            targetHandle: null, // No specific handle needed
+            label: response, // Show response as edge label
+            id: `reactflow__edge-${node.id}response-${index}-${targetNodeId}`
+        }))
+    );
+
+    return { nodes: formattedNodes, edges: formattedEdges };
+}
+
+// Example usage
+// const businessName = "Mango Box Seller";
+// const businessType = "Minimum box price: 100, Minimum order: 20";
+
+let businessName;
+let businessType;
+getFormattedNodes(businessName, businessType)
+    .then(nodes => console.log(JSON.stringify(nodes, null, 2)))
+    .catch(err => console.error("Error:", err));
+
+export default getFormattedNodes;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../LeftBar/LeftBar.css";
+import getFormattedNodes from "../FlowGenerator/FlowGenerator";
 
 const LeftBar = ({ flow_id, business_id }) => {
   const [businessId, setBusinessId] = useState(business_id);
@@ -56,17 +57,65 @@ const LeftBar = ({ flow_id, business_id }) => {
 
       const data = await response.json();
 
+      let updatedBusinessId = businessId;
       if (!businessId && data.user?._id) {
-        // If a new business was registered, store the new businessId
-        setBusinessId(data.user._id);
+        updatedBusinessId = data.user._id; // Store the new businessId
+        setBusinessId(updatedBusinessId);
       }
-      fetchBusinessDetails(businessId);
+
+      // ✅ Wait for AI-generated flow before proceeding
+      const AIGeneraterFlow = await handleFlowGeneration(name, description);
+
+      // ✅ Save generated flow to backend
+      await saveNodesToDB(flow_id, AIGeneraterFlow);
+
+      // ✅ Fetch updated business details
+      fetchBusinessDetails(updatedBusinessId);
     } catch (err) {
       setError(err.message || "Submission failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  async function handleFlowGeneration(name, description) {
+    try {
+      const AIGeneraterFlow = await getFormattedNodes(name, description); // ✅ Wait for the promise
+      console.log(AIGeneraterFlow);
+      return AIGeneraterFlow; // ✅ Return the generated flow
+    } catch (error) {
+      console.error("Error generating nodes:", error);
+      return null; // Return null if an error occurs
+    }
+  }
+
+  // Function to save AI-generated flow to the backend
+  async function saveNodesToDB(businessId, flowData) {
+    if (!flowData || !businessId) return;
+
+    try {
+      const res = await fetch("http://localhost:7000/api/flows/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: businessId,
+          nodes: flowData.nodes, // Ensure correct format
+          edges: flowData.edges, // Include edges if applicable
+        }),
+      });
+
+      const responseData = await res.json();
+      if (responseData.id) {
+        console.log(responseData);
+        // setFlowId(responseData.id); // Store flow ID for future updates
+      }
+
+      console.log("Flow saved successfully:", responseData);
+    } catch (error) {
+      console.error("Error saving flow:", error);
+    }
+  }
+
 
   return (
     <div className="left-bar">
