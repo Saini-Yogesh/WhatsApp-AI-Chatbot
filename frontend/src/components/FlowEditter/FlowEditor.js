@@ -4,7 +4,8 @@ import ReactFlow, {
     applyNodeChanges,
     applyEdgeChanges,
     Background,
-    Controls
+    Controls,
+    MiniMap
 } from "reactflow";
 import "reactflow/dist/style.css";
 import CustomNode from "./CustomNode";
@@ -162,7 +163,22 @@ const FlowEditor = ({ flow_id, business_id }) => {
                     fitView
                 >
                     <Background />
-                    <Controls />
+                    <Controls
+                        style={{
+                            background: "rgba(0, 0, 0, 0.7)",
+                            padding: "8px 12px",
+                            borderRadius: "10px",
+                            display: "flex",
+                            gap: "10px"
+                        }}
+                    />
+                    <MiniMap
+                        nodeStrokeColor={(node) => (node.type === "custom" ? "#ffa726" : "#ffffff")}
+                        nodeColor={(node) => (node.type === "custom" ? "#ffa726" : "#ffffff")}
+                        nodeBorderRadius={2}
+                        position="bottom-right"
+                    />
+
                 </ReactFlow>
             </div>
         </div >

@@ -6,7 +6,7 @@ body {
 }
 
 .flow-container {
-  height: 90vh;
+  height: 93vh;
   width: calc(100% - 400px) !important;
 }
 
@@ -26,7 +26,6 @@ body {
 .react-flow__background {
   background: #1a1a1a !important; /* Ensure background inside ReactFlow is also dark */
 }
-
 
 /* Sidebar Buttons */
 .btn {
