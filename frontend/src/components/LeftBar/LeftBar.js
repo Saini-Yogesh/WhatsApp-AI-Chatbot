@@ -119,17 +119,17 @@ const LeftBar = ({ flow_id, business_id }) => {
 
   return (
     <div className="left-bar">
-      <h2>Chatbot  Details</h2>
+      <h2>Provide ChatBot  Details</h2>
       <form onSubmit={handleSubmit} className="business-form">
         <input
           type="text"
-          placeholder="Chatbot name"
+          placeholder="ChatBot Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
         <textarea
-          placeholder="Chatbot description"
+          placeholder="ChatBot Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
