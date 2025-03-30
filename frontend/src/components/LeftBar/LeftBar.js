@@ -111,11 +111,11 @@ const LeftBar = ({ flow_id, business_id }) => {
       }
 
       console.log("Flow saved successfully:", responseData);
+      window.location.href = window.location.href;
     } catch (error) {
       console.error("Error saving flow:", error);
     }
   }
-
 
   return (
     <div className="left-bar">

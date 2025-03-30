@@ -24,10 +24,24 @@ async function generateQuestionFlow(businessName, businessType) {
                         - Business Name: ${businessName}
                         - Business Type: ${businessType}
 
-                        Each question must have fixed responses
-                        Responses can connect to an existing node or a new node, ensuring a logical flow.
-                        at max 7 Nodes
-                        
+                        Create an interactive question-response flow where each question has 
+                        fixed responses leading to either an existing node or a new node while
+                        maintaining a logical sequence. The flow should form a closed loop, 
+                        ensuring the user eventually returns to the starting point. 
+                        The total number of nodes should be between 10 and 25, labeled 
+                        sequentially as node_1, node_2, node_3, and so on. The user always 
+                        starts at node_1, which begins with a "Hello" message.
+                        The interaction follows a structured format where the user 
+                        inputs a response, and the system then provides the corresponding
+                        response and presents the next question. The design should ensure
+                        smooth transitions, avoiding dead ends while keeping the 
+                        conversation engaging and cohesive.
+
+                        The user starts by entering any text like hello, which acts as
+                        the entry point. The system then asks whether the user wants a
+                        room or something else. This question directs the user into the 
+                        flow based on their response.
+
                         Format the response as valid JSON:
                         {
                             "nodes": [
@@ -87,7 +101,7 @@ async function getFormattedNodes(businessName, businessType) {
         type: "custom",
         position: { x: Math.random() * 400, y: index * 200 }, // Randomized position
         data: {
-            id: node.id,
+            id: `node_${node.id}`,
             label: node.question, // Store the exact question
             responses: Object.keys(node.PossibleresponsesForThisQuestion) // ✅ Actual responses (keys)
         },
