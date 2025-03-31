@@ -81,7 +81,7 @@ const LeftBar = ({ flow_id, business_id }) => {
   async function handleFlowGeneration(name, description) {
     try {
       const AIGeneraterFlow = await getFormattedNodes(name, description); // ✅ Wait for the promise
-      console.log(AIGeneraterFlow);
+      // console.log(AIGeneraterFlow);
       return AIGeneraterFlow; // ✅ Return the generated flow
     } catch (error) {
       console.error("Error generating nodes:", error);
@@ -106,11 +106,12 @@ const LeftBar = ({ flow_id, business_id }) => {
 
       const responseData = await res.json();
       if (responseData.id) {
-        console.log(responseData);
+        // console.log(responseData);
         // setFlowId(responseData.id); // Store flow ID for future updates
       }
 
-      console.log("Flow saved successfully:", responseData);
+      // console.log("Flow saved successfully:", responseData);
+      // eslint-disable-next-line
       window.location.href = window.location.href;
     } catch (error) {
       console.error("Error saving flow:", error);

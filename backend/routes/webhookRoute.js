@@ -1,7 +1,8 @@
 const express = require("express");
 const twilio = require("twilio");
 const { MongoClient, ObjectId } = require("mongodb");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const router = express.Router();
 
@@ -16,8 +17,7 @@ const twilioClient = twilio(accountSid, authToken);
 const mongoURI = process.env.MONGO_URI;
 const dbName = "helloo"; // ✅ Change to "helloo"
 const collectionName = "flows"; // ✅ Change to "flows"
-const flowDocumentId = "67e8d648fbbeb112faf66791"; // ✅ ObjectId in MongoDB
-
+const flowDocumentId = process.env.FLOW_ID; // ✅ ObjectId in MongoDB
 let db;
 
 // Connect to MongoDB

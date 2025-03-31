@@ -4,11 +4,10 @@
  * @param {string} businessType - Type of business.
  * @returns {Promise<Object>} - Generated question flow.
 */
-const apiKey = "AIzaSyDaHf2W5ts4EAnC3K7aiXcDKCk7AwpgzHE"; // Ensure this is set in your environment variables
-
+const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Ensure this is set in your environment variables
 async function generateQuestionFlow(businessName, businessType) {
     if (!apiKey) {
-        console.error("Error: Missing GEMINI_API_KEY in environment variables.");
+        console.error("Error: Missing REACT_APP_GEMINI_API_KEY in environment variables.");
         return null;
     }
 
@@ -95,6 +94,12 @@ async function generateQuestionFlow(businessName, businessType) {
 async function getFormattedNodes(businessName, businessType) {
     const rawNodes = await generateQuestionFlow(businessName, businessType);
 
+    // console.log(rawNodes);
+    if (!rawNodes) {
+        console.error("Error: Failed to generate nodes.");
+        return { nodes: [], edges: [] };
+    }
+
     // ✅ Format nodes
     const formattedNodes = rawNodes.nodes.map((node, index) => ({
         id: node.id,
@@ -126,15 +131,5 @@ async function getFormattedNodes(businessName, businessType) {
 
     return { nodes: formattedNodes, edges: formattedEdges };
 }
-
-// Example usage
-// const businessName = "Mango Box Seller";
-// const businessType = "Minimum box price: 100, Minimum order: 20";
-
-let businessName;
-let businessType;
-getFormattedNodes(businessName, businessType)
-    .then(nodes => console.log(JSON.stringify(nodes, null, 2)))
-    .catch(err => console.error("Error:", err));
 
 export default getFormattedNodes;

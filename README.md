@@ -15,16 +15,30 @@ cd WhatsApp-AI-Chatbot
 
 ### 2. Setup Environment Variables
 
-Create a `.env` file in the root directory and add the following:
+You need to configure environment variables for both the frontend and backend.
+
+#### Backend (.env)
+Create a `.env` file inside the `backend` folder and add the following:
 
 ```env
-PORT=8000
+PORT=your_backend_port
 TWILIO_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 GEMINI_API_KEY=your_gemini_api_key
+MONGO_URI=your_mongo_uri
+FLOW_ID=your_flow_id
 ```
 
-⚠️ **Security Note:** Keep your API keys private and do not share them.
+#### Frontend (.env)
+Create a `.env` file inside the `frontend` folder and add the following:
+
+```env
+REACT_APP_GEMINI_API_KEY=your_gemini_api_key
+REACT_APP_FLOW_ID=your_flow_id
+REACT_APP_BUSINESS_ID=your_business_id
+```
+
+🚨 **Security Note:** Never expose API keys in public repositories.
 
 ### 3. Install Dependencies
 
@@ -72,14 +86,14 @@ npm run dev
 
 ### 5. Access the Application
 
-- **Backend API:** [http://localhost:8000](http://localhost:8000)
-- **Frontend:** [http://localhost:3000](http://localhost:3000) (Default React Port)
+- **Backend API:** [http://localhost:your_backend_port](http://localhost:your_backend_port)
+- **Frontend:** [http://localhost:3000](http://localhost:3000)
 
 ## Features
 
-✅ AI-driven structured conversations  
-✅ WhatsApp automation with Twilio API  
-✅ Real-time chat processing
+📅 AI-driven structured conversations  
+📞 WhatsApp automation with Twilio API  
+🛠️ Real-time chat processing  
 
 ## Contributing
 
@@ -101,13 +115,13 @@ Ensure the following scripts are included in your `package.json`:
 
 <table>
   <tr>
-    <td text-align="center">
+    <td align="center">
       <a href="https://github.com/Saini-Yogesh">
         <img src="https://github.com/Saini-Yogesh.png" width="120" height="120" style="border-radius: 50%;" /><br>
         <b>Saini-Yogesh</b>
       </a>
     </td>
-    <td text-align="center">
+    <td align="center">
       <a href="https://github.com/Sahil7811">
         <img src="https://github.com/Sahil7811.png" width="120" height="120" style="border-radius: 50%;" /><br>
         <b>Sahil7811</b>

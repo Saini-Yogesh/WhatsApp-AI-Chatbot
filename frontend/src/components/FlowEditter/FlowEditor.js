@@ -103,7 +103,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
                 setFlowId(responseData.id); // Store ID for future updates
             }
 
-            // alert(responseData.message);
+            alert(responseData.message);
         } catch (error) {
             console.error("Error saving flow:", error);
         }
