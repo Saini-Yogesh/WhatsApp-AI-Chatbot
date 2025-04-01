@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../LeftBar/LeftBar.css";
-import getFormattedNodes from "../FlowGenerator/FlowGenerator";
 
 const LeftBar = ({ flow_id, business_id }) => {
-  const [businessId, setBusinessId] = useState(business_id);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [aiResponses, setAiResponses] = useState([]);
@@ -30,10 +28,10 @@ const LeftBar = ({ flow_id, business_id }) => {
   };
 
   useEffect(() => {
-    if (businessId) {
-      fetchBusinessDetails(businessId);
+    if (business_id) {
+      fetchBusinessDetails(business_id);
     }
-  }, [businessId]);
+  }, [business_id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,78 +43,23 @@ const LeftBar = ({ flow_id, business_id }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id: businessId, // Use "id" to match backend expectation
+          id: business_id, // Use "id" to match backend expectation
           businessName: name,
           businessDescription: description,
+          flow_id: flow_id,
         }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to submit business details");
       }
-
-      const data = await response.json();
-
-      let updatedBusinessId = businessId;
-      if (!businessId && data.user?._id) {
-        updatedBusinessId = data.user._id; // Store the new businessId
-        setBusinessId(updatedBusinessId);
-      }
-
-      // ✅ Wait for AI-generated flow before proceeding
-      const AIGeneraterFlow = await handleFlowGeneration(name, description);
-
-      // ✅ Save generated flow to backend
-      await saveNodesToDB(flow_id, AIGeneraterFlow);
-
-      // ✅ Fetch updated business details
-      fetchBusinessDetails(updatedBusinessId);
+      window.location.reload();
     } catch (err) {
       setError(err.message || "Submission failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
-  async function handleFlowGeneration(name, description) {
-    try {
-      const AIGeneraterFlow = await getFormattedNodes(name, description); // ✅ Wait for the promise
-      // console.log(AIGeneraterFlow);
-      return AIGeneraterFlow; // ✅ Return the generated flow
-    } catch (error) {
-      console.error("Error generating nodes:", error);
-      return null; // Return null if an error occurs
-    }
-  }
-
-  // Function to save AI-generated flow to the backend
-  async function saveNodesToDB(businessId, flowData) {
-    if (!flowData || !businessId) return;
-
-    try {
-      const res = await fetch("http://localhost:7000/api/flows/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: businessId,
-          nodes: flowData.nodes, // Ensure correct format
-          edges: flowData.edges, // Include edges if applicable
-        }),
-      });
-
-      const responseData = await res.json();
-      if (responseData.id) {
-        // console.log(responseData);
-        // setFlowId(responseData.id); // Store flow ID for future updates
-      }
-
-      // console.log("Flow saved successfully:", responseData);
-      // eslint-disable-next-line
-      window.location.href = window.location.href;
-    } catch (error) {
-      console.error("Error saving flow:", error);
-    }
-  }
 
   return (
     <div className="left-bar">

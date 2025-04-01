@@ -30,55 +30,14 @@ MongoClient.connect(mongoURI)
 
 async function getNextQuestion(userId, userResponse) {
     try {
-        const flow = await db.collection(collectionName).findOne({ _id: new ObjectId(flowDocumentId) });
-
-        if (!flow) {
-            console.error("❌ Flow document not found.");
-            return { question: "Flow document missing.", responses: [] };
-        }
-
-        const userState = await db.collection("user_states").findOne({ userId });
-        let currentNodeId = userState?.currentNodeId || "node_1";
-
-        // console.log("✅ Current Node ID:", currentNodeId);
-
-        const currentNode = flow.nodes.find(node => node.id === currentNodeId);
-        if (!currentNode) return { question: "Invalid node.", responses: [] };
-
-        // console.log("✅ Current Node Data:", currentNode);
-
-        const responseIndex = currentNode.data.responses.indexOf(userResponse);
-        if (responseIndex === -1) {
-            console.warn("❌ Invalid Response:", userResponse);
-            return { question: "Please choose a valid option.", responses: currentNode.data.responses };
-        }
-
-        // console.log("✅ Response Index:", responseIndex);
-
-        const edge = flow.edges.find(e => e.source === currentNodeId && e.sourceHandle === `response-${responseIndex}`);
-        if (!edge) {
-            console.warn("❌ No Edge Found:", { currentNodeId, responseIndex });
-            return { question: "No valid next step.", responses: [] };
-        }
-
-        const nextNodeId = edge.target;
-        // console.log("✅ Next Node ID:", nextNodeId);
-
-        const nextNode = flow.nodes.find(node => node.id === nextNodeId);
-        if (!nextNode) {
-            console.warn("❌ Next Node Not Found:", nextNodeId);
-            return { question: "Flow ended.", responses: [] };
-        }
-
-        // console.log("✅ Next Node Data:", nextNode);
-
-        await db.collection("user_states").updateOne(
-            { userId },
-            { $set: { currentNodeId: nextNodeId } },
-            { upsert: true }
+        const flow = await db.collection(collectionName).findOne(
+            { _id: new ObjectId(flowDocumentId) },
+            { projection: { flowText: 1, _id: 0 } } // Only fetches flowText and excludes _id
         );
 
-        return { question: nextNode.data.label, responses: nextNode.data.responses };
+        const flowText = flow?.flowText || null; // Handle case where flowText might be missing
+
+        return { question: "nextNode.data.label, responses: nextNode.data.responses" };
     } catch (error) {
         console.error("❌ Error processing flow:", error);
         return { question: "Error occurred.", responses: [] };

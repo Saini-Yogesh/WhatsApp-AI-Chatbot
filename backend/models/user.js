@@ -4,7 +4,6 @@ const userSchema = new mongoose.Schema(
   {
     businessName: { type: String, required: true },
     businessDescription: { type: String, required: true },
-    email: { type: String, default: null }, // Added email field with default
     aiResponses: { type: Array, default: [] }, // Store as an array of Q&A
   },
   { timestamps: true }

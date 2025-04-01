@@ -23,6 +23,9 @@ router.post("/save", async (req, res) => {
             // No ID provided, create a new document
             const newFlow = new Flow({ nodes, edges });
             await newFlow.save();
+            if (flow_id) {
+                await saveNewGeneratedFlow(flow_id, businessName, businessDescription);
+              }
             return res.status(201).json({ message: "Flow created", id: newFlow._id });
         }
     } catch (err) {

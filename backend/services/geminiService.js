@@ -1,11 +1,9 @@
-const axios = require("axios");
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
-const { geminiClient, GEMINI_API_KEY } = require("../config/geminiClient");
 
 async function generateAIResponses(businessName, businessDescription) {
+  const API_KEY = process.env.GEMINI_API_KEY;
   try {
-    const API_KEY = process.env.GEMINI_API_KEY;
     if (!API_KEY) {
       console.error("Missing GEMINI_API_KEY in environment variables.");
       return [];
@@ -30,30 +28,34 @@ async function generateAIResponses(businessName, businessDescription) {
       ],
     };
 
-    const response = await axios.post(url, payload, {
+    const response = await fetch(url, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
-    const responseText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    const data = await response.json();
 
-if (responseText) {
-  const chatbotFlow = [];
-  const flowMatches = responseText.split(/(?=Bot:)/g).filter(item => item.trim());
+    const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
 
-  for (const step of flowMatches) {
-    const botMatch = step.match(/Bot:(.+)/i);
-    const optionsMatch = step.match(/Options:(.+)/i);
+    if (responseText) {
+      const chatbotFlow = [];
+      const flowMatches = responseText.split(/(?=Bot:)/g).filter(item => item.trim());
 
-    if (botMatch && optionsMatch) {
-      chatbotFlow.push({
-        bot: botMatch[1].trim(),
-        options: optionsMatch[1].split("|").map(opt => opt.trim()), // Ensure options are properly split
-      });
+      for (const step of flowMatches) {
+        const botMatch = step.match(/Bot:(.+)/i);
+        const optionsMatch = step.match(/Options:(.+)/i);
+
+        if (botMatch && optionsMatch) {
+          chatbotFlow.push({
+            bot: botMatch[1].trim(),
+            options: optionsMatch[1].split("|").map(opt => opt.trim()), // Ensure options are properly split
+          });
+        }
+      }
+
+      return chatbotFlow;
     }
-  }
-
-  return chatbotFlow;
-}
 
 
     return [];
