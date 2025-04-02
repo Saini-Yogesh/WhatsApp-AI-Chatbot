@@ -2,17 +2,21 @@ const express = require("express");
 const Flow = require("../models/Flow");
 const router = express.Router();
 const mongoose = require("mongoose");
+const generateFlowText = require("../services/FlowTextGenerator");
 
 // Save or update flow
 router.post("/save", async (req, res) => {
     try {
         const { id, nodes, edges } = req.body;
 
+        // Generate flow text using FlowTextGenerator
+        const flowText = await generateFlowText(nodes, edges);
+
         if (id) {
             // If an ID exists, update the document
             const updatedFlow = await Flow.findByIdAndUpdate(
                 id,
-                { nodes, edges },
+                { nodes, edges, flowText },
                 { new: true } // Return updated document
             );
 
@@ -21,17 +25,16 @@ router.post("/save", async (req, res) => {
             return res.status(200).json({ message: "Flow updated", id: updatedFlow._id });
         } else {
             // No ID provided, create a new document
-            const newFlow = new Flow({ nodes, edges });
+            const newFlow = new Flow({ nodes, edges, flowText });
             await newFlow.save();
-            if (flow_id) {
-                await saveNewGeneratedFlow(flow_id, businessName, businessDescription);
-              }
+
             return res.status(201).json({ message: "Flow created", id: newFlow._id });
         }
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 // Fetch the latest saved flow
 router.get("/get/:id", async (req, res) => {

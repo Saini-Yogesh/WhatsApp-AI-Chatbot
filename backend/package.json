@@ -12,7 +12,6 @@
   "description": "",
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
-    "axios": "^1.8.4",
     "body-parser": "^2.2.0",
     "cloudflared": "^0.7.0",
     "cors": "^2.8.5",
