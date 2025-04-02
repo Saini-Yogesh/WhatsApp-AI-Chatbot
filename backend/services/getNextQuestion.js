@@ -1,92 +1,76 @@
-const fetch = require("node-fetch");
-const { ObjectId } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // Ensure this is set in your environment variables
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateText?key=${GEMINI_API_KEY}`;
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-async function getNextQuestion(db, collectionName, flowDocumentId, userId, userResponse) {
+// MongoDB connection
+const mongoURI = process.env.MONGO_URI;
+const dbName = "helloo";
+const collectionName = "flows";
+const userStateCollection = "user_state";
+const flowDocumentId = process.env.FLOW_ID;
+
+let db;
+
+async function connectDB() {
     try {
-        const flow = await db.collection(collectionName).findOne(
+        if (!db) {
+            const client = new MongoClient(mongoURI);
+            await client.connect();
+            db = client.db(dbName);
+            console.log("✅ Connected to MongoDB");
+        }
+        return db;
+    } catch (error) {
+        console.error("❌ MongoDB Connection Error:", error);
+        throw new Error("Failed to connect to MongoDB.");
+    }
+}
+
+async function getNextQuestion(sender, userResponse) {
+    try {
+        const database = await connectDB();
+
+        // Fetch user state
+        const userState = await database.collection(userStateCollection).findOne({ sender });
+
+        // Fetch flow text from database
+        const flow = await database.collection(collectionName).findOne(
             { _id: new ObjectId(flowDocumentId) },
             { projection: { flowText: 1, _id: 0 } }
         );
 
-        const flowText = flow?.flowText || null;
-        if (!flowText) {
-            return { question: "Error: No flow data found.", responses: [] };
+        // Ensure flowText exists
+        if (!flow || !flow.flowText) {
+            return { question: "Flow not found.", responses: [] };
         }
 
-        // Extract stored user responses
-        const lines = flowText.split("\n").map(line => line.trim()).filter(line => line);
-        let storedResponses = [];
+        const flowText = flow.flowText; // Normal text
+        const prevQuestion = userState?.currentQuestion || "No previous question";
+        // console.log(prevQuestion);
+        // Use Gemini AI to generate the next response
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = `You were asked: "${prevQuestion}". You replied: "${userResponse}".  
+                        Flow context: "${flowText}".  
 
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].startsWith("User: ")) {
-                storedResponses.push(lines[i].replace("User: ", "").trim());
-            }
-        }
+                        If your response is relevant to the flow, continue the conversation naturally.  
+                        If not, reply: "That’s outside the flow. For specific queries, contact example@gmail.com."`;
 
-        if (storedResponses.length === 0) {
-            return { question: "No stored responses found.", responses: [] };
-        }
+        const result = await model.generateContent(prompt);
 
-        // Call Gemini API to find the most relevant stored response
-        const geminiPrompt = `
-        I have the following stored responses: ${JSON.stringify(storedResponses)}.
-        The user said: "${userResponse}".
-        Which stored response is the most relevant to the user's input?
-        Return only the exact stored response from the list without explanation.
-        `;
+        const geminiResponse = result.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
+            "I'm not sure how to respond. If you have any specific questions, contact us at example@gmail.com.";
 
-        const payload = {
-            contents: [
-                {
-                    role: "user",
-                    parts: [{ text: geminiPrompt }],
-                },
-            ],
-        };
+        // **Update user state with the new question**
+        await database.collection(userStateCollection).updateOne(
+            { sender },
+            { $set: { currentQuestion: geminiResponse } },
+            { upsert: true }
+        );
 
-        const response = await fetch(GEMINI_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
-
-        const data = await response.json();
-        const bestMatch = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
-
-        if (!bestMatch) {
-            return { question: "I didn't understand that. Can you clarify?", responses: [] };
-        }
-
-        // Find the corresponding chatbot response
-        let nextQuestion = null;
-        let responses = [];
-
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i] === `User: ${bestMatch}`) {
-                for (let j = i + 1; j < lines.length; j++) {
-                    if (lines[j].startsWith("Chatbot:")) {
-                        nextQuestion = lines[j].replace("Chatbot: ", "").trim();
-                    } else if (lines[j].startsWith("(Options:")) {
-                        responses = lines[j]
-                            .replace("(Options:", "")
-                            .replace(")", "")
-                            .split(",")
-                            .map(opt => opt.trim());
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-
-        if (!nextQuestion) {
-            return { question: "I couldn't find a relevant response. Please try again.", responses: [] };
-        }
-
-        return { question: nextQuestion, responses };
+        return { question: geminiResponse, responses: [] };
     } catch (error) {
         console.error("❌ Error processing flow:", error);
         return { question: "Error occurred.", responses: [] };

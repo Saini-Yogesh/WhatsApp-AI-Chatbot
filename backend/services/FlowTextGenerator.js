@@ -17,7 +17,7 @@ async function generateFlowText(nodes, edges) {
 
     let flowStructure = "Here is a structured flow:\n\n";
     nodes.forEach((node) => {
-        flowStructure += `Node ${node.id}: ${node.question}\n`;
+        flowStructure += `Node ${node.id}: ${node.data.label}\n`;
         flowStructure += `Responses:\n`;
         edges
             .filter((edge) => edge.source === node.id)
