@@ -46,6 +46,11 @@ body {
   transform: scale(1.05);
 }
 
+.btn:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
 .flow-continer-navbar {
   display: flex;
   justify-content: right;

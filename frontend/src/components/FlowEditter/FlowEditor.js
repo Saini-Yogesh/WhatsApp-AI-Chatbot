@@ -17,6 +17,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [flowId, setFlowId] = useState(flow_id);
+    const [loading, setLoading] = useState(false);
 
     const onNodesChange = useCallback(
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -88,6 +89,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
     };
 
     const saveFlow = async () => {
+        setLoading(true);
         const flowData = { id: flowId, nodes, edges };
         // console.log("Saving flow:", flowData);
 
@@ -107,6 +109,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
         } catch (error) {
             console.error("Error saving flow:", error);
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -144,7 +147,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
         <div className="flow-container">
             <div className="flow-continer-navbar">
                 <button onClick={addNode} className="btn">Add Question</button>
-                <button onClick={saveFlow} className="btn">Save</button>
+                <button onClick={saveFlow} className="btn" disabled={loading}>{!loading ? "Save" : "Saving..."}</button>
             </div>
             <div className="flow-editor">
                 <ReactFlow
