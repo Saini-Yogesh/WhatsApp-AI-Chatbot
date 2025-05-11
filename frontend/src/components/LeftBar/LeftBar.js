@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../LeftBar/LeftBar.css";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 const LeftBar = ({ flow_id, business_id }) => {
-  const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");

@@ -12,9 +12,10 @@ import CustomNode from "./CustomNode";
 import "./FlowEditor.css";
 
 const nodeTypes = { custom: CustomNode };
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const FlowEditor = ({ flow_id, business_id }) => {
-    const BASE_URL = process.env.REACT_APP_BASE_URL;
+
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [flowId, setFlowId] = useState(flow_id);
