@@ -112,6 +112,8 @@ const LeftBar = ({ flow_id, business_id }) => {
           </ul>
         </div>
       )}
+      {/* eslint-disable-next-line */}
+      <h1></h1>
     </div>
   );
 };
