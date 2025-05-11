@@ -14,6 +14,7 @@ import "./FlowEditor.css";
 const nodeTypes = { custom: CustomNode };
 
 const FlowEditor = ({ flow_id, business_id }) => {
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [flowId, setFlowId] = useState(flow_id);
@@ -94,7 +95,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
         // console.log("Saving flow:", flowData);
 
         try {
-            const res = await fetch("http://localhost:7000/api/flows/save", {
+            const res = await fetch(`${BASE_URL}/api/flows/save`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(flowData)
@@ -116,7 +117,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
         const fetchFlow = async () => {
             if (!flowId) return;
             try {
-                const res = await fetch(`http://localhost:7000/api/flows/get/${flowId}`);
+                const res = await fetch(`${BASE_URL}/api/flows/get/${flowId}`);
                 const data = await res.json();
                 if (data && data.nodes) {
                     // Re-assign event handlers
