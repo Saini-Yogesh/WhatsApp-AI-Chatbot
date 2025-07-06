@@ -4,6 +4,13 @@ This project is an AI-powered chatbot for WhatsApp using Twilio API and Gemini A
 
 ![image](https://github.com/user-attachments/assets/d68aab6f-ee74-4d16-8bce-4fb3fffe6c9e)
 
+## Potential Use Cases
+- Customer support automation
+- Personal assistant via WhatsApp
+- Educational/tutoring bot
+- E-commerce product recommendations
+- FAQ automation for businesses
+
 ## Installation & Setup Guide
 
 ### 1. Clone the Repository
