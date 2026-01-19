@@ -22,6 +22,9 @@ const userRoutes = require("./routes/userRoutes");
 const flowRoutes = require("./routes/flowRoutes");
 const webhookRoutes = require("./routes/webhookRoute");
 
+app.get("/", (req, res) => {
+  res.json({ hello: "test123" });
+});
 app.use("/api/users", userRoutes);
 app.use("/api/flows", flowRoutes);
 app.use("/webhook", webhookRoutes);
