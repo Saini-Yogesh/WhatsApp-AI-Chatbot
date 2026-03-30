@@ -6,8 +6,11 @@ body {
 }
 
 .flow-container {
-  height: 93vh;
-  width: calc(100% - 400px) !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 .sidebar {
@@ -58,3 +61,14 @@ body {
   gap: 10px;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .flow-container {
+    height: 60vh;
+    width: 100% !important;
+  }
+  .flow-continer-navbar {
+    justify-content: center;
+  }
+}
+

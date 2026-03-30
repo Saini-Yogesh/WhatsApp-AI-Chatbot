@@ -51,7 +51,7 @@ async function getNextQuestion(sender, userResponse) {
         const prevQuestion = userState?.currentQuestion || "No previous question";
         // console.log(prevQuestion);
         // Use Gemini AI to generate the next response
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const prompt = `You were asked: "${prevQuestion}". You replied: "${userResponse}".  
                         Flow context: "${flowText}".  
 

@@ -12,3 +12,9 @@
   background-color: #fff6f4; /* Editor background */
   overflow: auto;
 }
+
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+  }
+}
