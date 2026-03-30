@@ -1,15 +1,15 @@
 /* Home.css */
 .home-container {
   display: flex;
-  height: 100vh; /* Full height */
-  width: 100vw; /* Full width */
-  overflow: hidden; /* Prevents scrolling */
-  background-color: #0f4c36;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--bg-app);
 }
 
 .flow-editor {
-  flex-grow: 1; /* Takes remaining space */
-  background-color: #fff6f4; /* Editor background */
+  flex-grow: 1;
+  background-color: var(--bg-canvas);
   overflow: auto;
 }
 
