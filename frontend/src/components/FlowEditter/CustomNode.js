@@ -22,12 +22,12 @@ const CustomNode = ({ data }) => {
             </div>
 
             {/* Editable Question */}
-            <input
-                type="text"
+            <textarea
                 value={data.label}
                 onChange={(e) => data.onChange(e.target.value)}
                 className="question-input"
                 placeholder="Enter question..."
+                rows="3"
             />
 
             {/* Response Options with Individual Outgoing Handles */}

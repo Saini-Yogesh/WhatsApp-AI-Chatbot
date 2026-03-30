@@ -1,64 +1,40 @@
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
 
 async function generateAIResponses(businessName, businessDescription) {
   const API_KEY = process.env.GEMINI_API_KEY;
+  if (!API_KEY) {
+    console.error("Missing GEMINI_API_KEY in environment variables.");
+    return [];
+  }
+
   try {
-    if (!API_KEY) {
-      console.error("Missing GEMINI_API_KEY in environment variables.");
-      return [];
-    }
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
-
-    const payload = {
-      contents: [
-        {
-          parts: [
-            {
-              text: `Generate a structured chatbot flow for ${businessName}, specializing in ${businessDescription}. 
-              Each step should be a short question with three selectable options only. 
-              Format strictly as:
-              Bot: [Short question]
-              Options: Option 1 | Option 2 | Option 3
-              No explanations, introductions, or additional text—only the structured output.`,
-            },
-          ],
-        },
-      ],
-    };
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+      }
     });
 
-    const data = await response.json();
+    const prompt = `Generate a structured chatbot flow for ${businessName}, specializing in ${businessDescription}. 
+    Each step should be a short question with exactly three selectable options. 
+    Format your response strictly as a JSON array of objects. Do not include any HTML markdown tags or text outside of the JSON. Make sure valid JSON is returned.
+    Example: 
+    [
+      { "bot": "Hello, how can I help?", "options": ["Option 1", "Option 2", "Option 3"] },
+      { "bot": "What size?", "options": ["Small", "Medium", "Large"] }
+    ]`;
 
-    const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text().trim();
+    
+    // Safety fallback parser if markdown was appended accidentally
+    const jsonStr = responseText.replace(/```json|```/g, "").trim();
+    const chatbotFlow = JSON.parse(jsonStr);
 
-    if (responseText) {
-      const chatbotFlow = [];
-      const flowMatches = responseText.split(/(?=Bot:)/g).filter(item => item.trim());
-
-      for (const step of flowMatches) {
-        const botMatch = step.match(/Bot:(.+)/i);
-        const optionsMatch = step.match(/Options:(.+)/i);
-
-        if (botMatch && optionsMatch) {
-          chatbotFlow.push({
-            bot: botMatch[1].trim(),
-            options: optionsMatch[1].split("|").map(opt => opt.trim()), // Ensure options are properly split
-          });
-        }
-      }
-
-      return chatbotFlow;
-    }
-
-
-    return [];
+    return Array.isArray(chatbotFlow) ? chatbotFlow : [];
   } catch (error) {
     console.error(`❌ Error generating chatbot flow: ${error.message}`);
     return [];

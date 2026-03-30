@@ -4,34 +4,47 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const generateFlowText = require("../services/FlowTextGenerator");
 
-// Save or update flow
+// Save or update flow -> Asynchronous processing for UI latency optimization
 router.post("/save", async (req, res) => {
     try {
         const { id, nodes, edges } = req.body;
 
-        // Generate flow text using FlowTextGenerator
-        const flowText = await generateFlowText(nodes, edges);
-
+        let flowDoc;
         if (id) {
-            // If an ID exists, update the document
-            const updatedFlow = await Flow.findByIdAndUpdate(
+            // Find Existing Flow and replace Nodes/Edges
+            flowDoc = await Flow.findByIdAndUpdate(
                 id,
-                { nodes, edges, flowText },
-                { new: true } // Return updated document
+                { nodes, edges },
+                { new: true, upsert: true } 
             );
-
-            if (!updatedFlow) return res.status(404).json({ error: "Flow not found" });
-
-            return res.status(200).json({ message: "Flow updated", id: updatedFlow._id });
         } else {
-            // No ID provided, create a new document
-            const newFlow = new Flow({ nodes, edges, flowText });
-            await newFlow.save();
-
-            return res.status(201).json({ message: "Flow created", id: newFlow._id });
+            // New Flow Instance
+            flowDoc = new Flow({ nodes, edges, flowText: "Generating summary..." });
+            await flowDoc.save();
         }
+
+        // Return immediately with success so Frontend does not hang!
+        res.status(id ? 200 : 201).json({ 
+            message: id ? "Flow updated successfully" : "Flow created successfully", 
+            id: flowDoc._id 
+        });
+
+        // Background ASYNC Task: Let Gemini AI convert the new map structure into FlowText
+        generateFlowText(nodes, edges)
+            .then(generatedText => {
+                if (generatedText) {
+                    Flow.findByIdAndUpdate(flowDoc._id, { flowText: generatedText }).exec()
+                        .then(() => console.log(`✅ Background processing finished! Flow ID: ${flowDoc._id} updated with flow script.`))
+                        .catch(err => console.error("❌ Failed to update flow text:", err));
+                }
+            })
+            .catch(err => {
+                console.error(`❌ Background processing failed for Flow ID: ${flowDoc._id}`, err);
+            });
+
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Save Route Error:", err);
+        res.status(500).json({ error: "Failed to save flow." });
     }
 });
 

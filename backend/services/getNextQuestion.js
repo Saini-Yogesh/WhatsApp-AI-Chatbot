@@ -1,55 +1,26 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const Flow = require("../models/Flow");
+const UserState = require("../models/UserState");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
 
-// Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// MongoDB connection
-const mongoURI = process.env.MONGO_URI;
-const dbName = "helloo";
-const collectionName = "flows";
-const userStateCollection = "user_state";
 const flowDocumentId = process.env.FLOW_ID;
-
-let db;
-
-async function connectDB() {
-    try {
-        if (!db) {
-            const client = new MongoClient(mongoURI);
-            await client.connect();
-            db = client.db(dbName);
-            console.log("✅ Connected to MongoDB");
-        }
-        return db;
-    } catch (error) {
-        console.error("❌ MongoDB Connection Error:", error);
-        throw new Error("Failed to connect to MongoDB.");
-    }
-}
 
 async function getNextQuestion(sender, userResponse) {
     try {
-        const database = await connectDB();
+        // Fetch user state through Mongoose
+        const userState = await UserState.findOne({ sender });
 
-        // Fetch user state
-        const userState = await database.collection(userStateCollection).findOne({ sender });
+        // Fetch flow text from database through Mongoose directly
+        const flow = await Flow.findById(flowDocumentId).select("flowText");
 
-        // Fetch flow text from database
-        const flow = await database.collection(collectionName).findOne(
-            { _id: new ObjectId(flowDocumentId) },
-            { projection: { flowText: 1, _id: 0 } }
-        );
-
-        // Ensure flowText exists
         if (!flow || !flow.flowText) {
             return { question: "Flow not found.", responses: [] };
         }
 
-        const flowText = flow.flowText; // Normal text
+        const flowText = flow.flowText;
         const prevQuestion = userState?.currentQuestion || "No previous question";
-        // console.log(prevQuestion);
+
         // Use Gemini AI to generate the next response
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const prompt = `You were asked: "${prevQuestion}". You replied: "${userResponse}".  
@@ -60,20 +31,20 @@ async function getNextQuestion(sender, userResponse) {
 
         const result = await model.generateContent(prompt);
 
-        const geminiResponse = result.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        const geminiResponse = result.response?.text() || 
             "I'm not sure how to respond. If you have any specific questions, contact us at example@gmail.com.";
 
-        // **Update user state with the new question**
-        await database.collection(userStateCollection).updateOne(
+        // Update user state with the new question efficiently via Mongoose
+        await UserState.findOneAndUpdate(
             { sender },
             { $set: { currentQuestion: geminiResponse } },
-            { upsert: true }
+            { upsert: true, new: true }
         );
 
         return { question: geminiResponse, responses: [] };
     } catch (error) {
         console.error("❌ Error processing flow:", error);
-        return { question: "Error occurred.", responses: [] };
+        return { question: "Error occurred processing your response. Please try again.", responses: [] };
     }
 }
 

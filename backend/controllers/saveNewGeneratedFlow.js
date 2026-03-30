@@ -11,26 +11,30 @@ const generateFlowText = require("../services/FlowTextGenerator")
  */
 async function saveNewGeneratedFlow(flowId, businessName, businessType) {
     try {
-        // Generate formatted nodes and edges
-        // console.log("Calling getFormattedNodes...");
+        // Generate formatted nodes and edges (this takes time so we MUST await it)
         const result = await getFormattedNodes(businessName, businessType);
-        // console.log("Received from getFormattedNodes:", result);
-
         const { nodes, edges } = result;
-        const flowText = await generateFlowText(nodes, edges);
 
         if (!nodes.length || !edges.length) {
             throw new Error("Generated flow is empty. Check API response.");
         }
 
-        // Save/update the flow in the database
+        // Save the flow instantly so the frontend canvas can render on reload
         const updatedFlow = await Flow.findByIdAndUpdate(
             flowId,
-            { nodes, edges, flowText },
+            { nodes, edges, flowText: "Generating script in background..." },
             { new: true, upsert: true } // Create if it doesn't exist
         );
 
-        // console.log("✅ Flow saved successfully:", updatedFlow);
+        // Async Background Task: generate script so we don't block the caller thread
+        generateFlowText(nodes, edges)
+            .then(text => {
+                if (text) {
+                    Flow.findByIdAndUpdate(flowId, { flowText: text }).exec();
+                }
+            })
+            .catch(err => console.error("Flow Text Gen failed", err));
+
         return updatedFlow;
     } catch (error) {
         console.error("❌ Error saving generated flow:", error.message);
