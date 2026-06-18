@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://whatsapp-ai-chatbot.vercel.app/sitemap.xml
