@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../LeftBar/LeftBar.css";
+import { logActivity } from "../../utils/logger";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 const LeftBar = ({ flow_id, business_id }) => {
@@ -55,8 +56,12 @@ const LeftBar = ({ flow_id, business_id }) => {
       if (!response.ok) {
         throw new Error("Failed to submit business details");
       }
+      
+      logActivity("UPDATE_BUSINESS_DETAILS", { name, description });
+
       window.location.reload();
     } catch (err) {
+      logActivity("ERROR_BUSINESS_DETAILS", { error: err.message });
       setError(err.message || "Submission failed. Please try again.");
     } finally {
       setLoading(false);

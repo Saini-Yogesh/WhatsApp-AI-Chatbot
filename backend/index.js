@@ -21,6 +21,7 @@ connectToMongoDB(MONGO_URI).then(() => {
 const userRoutes = require("./routes/userRoutes");
 const flowRoutes = require("./routes/flowRoutes");
 const webhookRoutes = require("./routes/webhookRoute");
+const logRoutes = require("./routes/logRoutes");
 
 app.get("/", (req, res) => {
   res.json({ hello: "test123" });
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/flows", flowRoutes);
 app.use("/webhook", webhookRoutes);
+app.use("/api/logs", logRoutes);
 
 // Start server
 const PORT = process.env.PORT || 7000;

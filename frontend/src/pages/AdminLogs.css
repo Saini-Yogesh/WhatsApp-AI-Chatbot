@@ -1,0 +1,470 @@
+.admin-dashboard {
+  min-height: 100vh;
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 2rem;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.dashboard-header p {
+  margin: 0.5rem 0 0 0;
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background-color: #2dd4bf;
+  color: #0f172a;
+  border-color: #2dd4bf;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Analytics Grid */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon.blue {
+  background-color: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+}
+.stat-icon.purple {
+  background-color: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
+}
+.stat-icon.green {
+  background-color: rgba(45, 212, 191, 0.1);
+  color: #2dd4bf;
+}
+
+.stat-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-info h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.main-content-grid {
+  display: grid;
+  grid-template-columns: 1fr minmax(350px, 30%);
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .main-content-grid {
+    grid-template-columns: 1fr 350px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-content-grid {
+    grid-template-columns: 1fr;
+  }
+  .table-container {
+    overflow-x: auto;
+  }
+}
+
+.logs-section,
+.top-operations-section {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.logs-section h2,
+.top-operations-section h2 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Table Styling */
+.table-container {
+  overflow-x: auto;
+  flex-grow: 1;
+}
+
+.logs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.logs-table th {
+  background-color: rgba(15, 23, 42, 0.6);
+  color: #94a3b8;
+  font-weight: 600;
+  text-align: left;
+  padding: 1rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #334155;
+  white-space: nowrap;
+}
+
+.logs-table th:nth-child(1) {
+  width: 15%;
+}
+.logs-table th:nth-child(2) {
+  width: 25%;
+}
+.logs-table th:nth-child(3) {
+  width: 10%;
+}
+.logs-table th:nth-child(4) {
+  width: 50%;
+}
+
+.logs-table th:first-child {
+  border-top-left-radius: 8px;
+}
+.logs-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.logs-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #1e293b;
+  font-size: 0.875rem;
+  vertical-align: top;
+}
+
+.logs-table tr:hover td {
+  background-color: rgba(51, 65, 85, 0.3);
+}
+
+.time-cell {
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(45, 212, 191, 0.1);
+  color: #2dd4bf;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(45, 212, 191, 0.2);
+}
+
+.path-cell {
+  color: #cbd5e1;
+  font-family: monospace;
+}
+
+.details-cell pre {
+  margin: 0;
+  background-color: #0f172a;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #1e293b;
+  color: #a855f7;
+  font-size: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+/* Top Operations List */
+.top-ops-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.op-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(15, 23, 42, 0.6);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+  transition: border-color 0.2s ease;
+}
+
+.op-item:hover {
+  border-color: #38bdf8;
+}
+
+.op-rank {
+  color: #64748b;
+  font-weight: 700;
+  width: 25px;
+}
+
+.op-name {
+  flex-grow: 1;
+  font-weight: 600;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.op-header {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem 0.5rem 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 600;
+  border-bottom: 1px solid #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.op-count-label {
+  width: 50px;
+  text-align: center;
+}
+
+.op-count {
+  width: 50px;
+  text-align: center;
+  padding: 0.25rem 0;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.op-count.today {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  margin-right: 0.5rem;
+}
+
+.op-count.total {
+  color: #a855f7;
+  background: rgba(168, 85, 247, 0.1);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #334155;
+}
+
+.pagination button {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #334155;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #64748b;
+  padding: 2rem !important;
+  font-style: italic;
+}
+
+/* Login Screen */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0f172a;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.login-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 3rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.login-icon {
+  background-color: rgba(45, 212, 191, 0.1);
+  color: #2dd4bf;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem auto;
+}
+
+.login-card h2 {
+  color: #fff;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.login-card p {
+  color: #94a3b8;
+  margin: 0 0 2rem 0;
+  font-size: 0.875rem;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.login-card input:focus {
+  border-color: #2dd4bf;
+}
+
+.login-card button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2dd4bf;
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-card button:hover:not(:disabled) {
+  background-color: #14b8a6;
+}
+
+.login-card button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-error {
+  color: #ef4444 !important;
+  margin: -0.5rem 0 1rem 0 !important;
+  text-align: left;
+}

@@ -10,6 +10,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import CustomNode from "./CustomNode";
 import "./FlowEditor.css";
+import { logActivity } from "../../utils/logger";
 
 const nodeTypes = { custom: CustomNode };
 const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -46,6 +47,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
       },
     };
     setNodes((nds) => [...nds, newNode]);
+    logActivity("ADD_QUESTION_NODE", { nodeId: id });
   };
 
   const updateNodeLabel = (id, text) => {
@@ -81,6 +83,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
     setEdges((eds) =>
       eds.filter((edge) => edge.source !== id && edge.target !== id),
     );
+    logActivity("DELETE_QUESTION_NODE", { nodeId: id });
   };
 
   const onConnect = (params) => {
@@ -115,8 +118,10 @@ const FlowEditor = ({ flow_id, business_id }) => {
       }
 
       alert(responseData.message);
+      logActivity("SAVE_FLOW_SUCCESS", { flowId: responseData.id || flowId, nodesCount: nodes.length });
     } catch (error) {
       console.error("Error saving flow:", error);
+      logActivity("SAVE_FLOW_ERROR", { error: error.message });
     }
     setLoading(false);
   };
