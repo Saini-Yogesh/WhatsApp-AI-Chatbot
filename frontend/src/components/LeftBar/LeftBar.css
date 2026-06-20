@@ -153,7 +153,7 @@
 }
 
 .ai-responses li strong {
-  color: var(--accent-hover);
+  color: var(--border-color);
   font-weight: 600;
 }
 

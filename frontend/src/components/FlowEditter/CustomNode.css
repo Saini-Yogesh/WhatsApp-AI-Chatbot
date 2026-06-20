@@ -121,7 +121,8 @@
 .response-input {
   font-family: var(--font-sans);
   width: 100%;
-  padding: 10px 12px;
+  padding: 14px 16px;
+  min-height: 48px;
   border: none;
   background-color: transparent;
   font-size: 14px;

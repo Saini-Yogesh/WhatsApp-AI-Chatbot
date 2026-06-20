@@ -1,27 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 :root {
   /* WhatsApp Green Theme */
-  --bg-app: #0f4c36;       /* Original Forest Green / WhatsApp Green */
-  --bg-sidebar: #0f4c36;   
-  --bg-canvas: #efeae2;    /* Classic WhatsApp wallpaper tone */
+  --bg-app: #0f4c36; /* Original Forest Green / WhatsApp Green */
+  --bg-sidebar: #0f4c36;
+  --bg-canvas: #efeae2; /* Classic WhatsApp wallpaper tone */
 
-  --bg-card: #ffffff;      
+  --bg-card: #ffffff;
   --bg-chat-bubble: #dcf8c6;
-  --bg-input: #ffffff;     
+  --bg-input: #ffffff;
 
   --text-primary: #ffffff; /* White text on green background */
   --text-secondary: #a7f3d0; /* Light green/gray for secondary text */
   --text-inverse: #111b21; /* Dark text for inside cards/nodes */
-  --text-inverse-secondary: #667781;
-  
-  --accent-primary: #25D366; /* Bright Green */
-  --accent-hover: #128C7E;   /* Dark Teal */
-  --border-color: #064e3b;   /* Dark Green border */
+  --text-inverse-secondary: #54656f;
+
+  --accent-primary: #25d366; /* Bright Green */
+  --accent-hover: #128c7e; /* Dark Teal */
+  --border-color: #064e3b; /* Dark Green border */
   --border-inverse: #d1d5db; /* Light gray border for cards */
   --focus-ring: rgba(37, 211, 102, 0.4);
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
 * {
@@ -38,6 +38,6 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
-
