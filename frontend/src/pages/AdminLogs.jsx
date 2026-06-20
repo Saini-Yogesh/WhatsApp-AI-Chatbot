@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
-import "./AdminLogs.css";
-import {
-  Activity,
-  CalendarDays,
-  TrendingUp,
-  RefreshCw,
-  Lock,
-} from "lucide-react";
+import styles from "../components/admin/AdminDashboard.module.css";
+import { Lock, RefreshCw, Moon, Sun } from "lucide-react";
 import { logActivity } from "../utils/logger";
+
+// Import custom dashboard sub-components
+import DashboardOverview from "../components/admin/DashboardOverview";
+import EventCharts, { TopEventsBarChart } from "../components/admin/EventCharts";
+import TrafficAnalytics from "../components/admin/TrafficAnalytics";
+import OperationsAnalytics from "../components/admin/OperationsAnalytics";
+import ErrorMonitor from "../components/admin/ErrorMonitor";
+import DashboardInsights from "../components/admin/DashboardInsights";
 
 const AdminLogs = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
   const [analytics, setAnalytics] = useState(null);
+  const [range, setRange] = useState("7d");
+  const [darkMode, setDarkMode] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const analyticsRes = await fetch(`http://localhost:7000/api/logs/analytics`);
+      const analyticsRes = await fetch(`http://localhost:7000/api/logs/analytics?range=${range}`);
       const analyticsData = await analyticsRes.json();
 
       if (analyticsData.success) {
@@ -35,7 +38,6 @@ const AdminLogs = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setLoginError("");
     try {
       const res = await fetch("http://localhost:7000/api/logs/verify-admin", {
         method: "POST",
@@ -46,7 +48,6 @@ const AdminLogs = () => {
       if (data.success) {
         setIsAuthenticated(true);
       } else {
-        // Redirect to home and replace history if password is wrong
         window.location.replace("/");
       }
     } catch (err) {
@@ -65,17 +66,37 @@ const AdminLogs = () => {
       fetchData();
     }
     // eslint-disable-next-line
-  }, [isAuthenticated]);
+  }, [isAuthenticated, range]);
 
   if (!isAuthenticated) {
     return (
-      <div className="login-container">
-        <div className="login-card">
-          <div className="login-icon">
+      <div className={styles.dashboardContainer} style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{
+          background: "rgba(30, 41, 59, 0.7)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid #334155",
+          borderRadius: "12px",
+          padding: "3rem",
+          width: "100%",
+          maxWidth: "400px",
+          textAlign: "center",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+        }}>
+          <div style={{
+            backgroundColor: "rgba(45, 212, 191, 0.1)",
+            color: "#2dd4bf",
+            width: "64px",
+            height: "64px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 1.5rem auto"
+          }}>
             <Lock size={32} />
           </div>
-          <h2>Admin Access</h2>
-          <p>Please enter the password to view logs.</p>
+          <h2 style={{ color: "#fff", margin: "0 0 0.5rem 0", fontSize: "1.5rem" }}>Admin Access</h2>
+          <p style={{ color: "#94a3b8", margin: "0 0 2rem 0", fontSize: "0.875rem" }}>Please enter the password to view logs.</p>
           <form onSubmit={handleLogin}>
             <input
               type="password"
@@ -83,9 +104,34 @@ const AdminLogs = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
+              style={{
+                width: "100%",
+                padding: "0.75rem 1rem",
+                background: "#0f172a",
+                border: "1px solid #334155",
+                borderRadius: "8px",
+                color: "#fff",
+                fontSize: "1rem",
+                boxSizing: "border-box",
+                marginBottom: "1rem",
+                outline: "none"
+              }}
             />
-            {loginError && <p className="login-error">{loginError}</p>}
-            <button type="submit" disabled={loading}>
+            <button 
+              type="submit" 
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                backgroundColor: "#2dd4bf",
+                color: "#0f172a",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                cursor: "pointer"
+              }}
+            >
               {loading ? "Verifying..." : "Login"}
             </button>
           </form>
@@ -95,80 +141,79 @@ const AdminLogs = () => {
   }
 
   return (
-    <div className="admin-dashboard">
-      <div className="dashboard-header">
-        <div>
+    <div className={`${styles.dashboardContainer} ${!darkMode ? styles.lightMode : ""}`}>
+      {/* Header controls */}
+      <header className={styles.header}>
+        <div className={styles.headerTitle}>
           <h1>Activity Dashboard</h1>
-          <p>Monitor your chatbot's performance and user interactions</p>
+          <p>Monitor your chatbot's performance, operations, and anomalies</p>
         </div>
-        <button
-          className="refresh-btn"
-          onClick={() => fetchData()}
-          disabled={loading}
-        >
-          <RefreshCw className={loading ? "spin" : ""} size={18} /> Refresh Data
-        </button>
-      </div>
+        <div className={styles.controls}>
+          {/* Time range selection */}
+          <select 
+            className={styles.selectRange} 
+            value={range} 
+            onChange={(e) => setRange(e.target.value)}
+          >
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="7d">Last 7 Days</option>
+            <option value="30d">Last 30 Days</option>
+            <option value="90d">Last 90 Days</option>
+          </select>
 
-      {analytics && (
-        <div className="analytics-grid">
-          <div className="stat-card">
-            <div className="stat-icon blue">
-              <Activity size={24} />
-            </div>
-            <div className="stat-info">
-              <h3>Today's Activity</h3>
-              <h2>{analytics.todayCount}</h2>
-            </div>
+          {/* Theme toggler */}
+          <button className={styles.themeBtn} onClick={() => setDarkMode(!darkMode)}>
+            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+
+          {/* Manual refresh button */}
+          <button
+            className={styles.actionBtn}
+            onClick={fetchData}
+            disabled={loading}
+          >
+            <RefreshCw className={loading ? styles.spin : ""} size={16} /> Refresh
+          </button>
+        </div>
+      </header>
+
+      <div className={styles.dashboardGrid}>
+        {/* Row 1: KPI Overview Cards */}
+        <DashboardOverview kpis={analytics?.kpis} loading={loading} />
+
+        {/* Two-Column Masonry Dashboard Grid */}
+        <div className={styles.chartsGrid}>
+          {/* Left Column (2fr) - Event Charts, Traffic Heatmap, and Operations Stats */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <EventCharts 
+              overTime={analytics?.overTime} 
+              distribution={analytics?.distribution} 
+              loading={loading} 
+            />
+            <TrafficAnalytics 
+              topRoutes={analytics?.topRoutes} 
+              heatmap={analytics?.heatmap} 
+              loading={loading} 
+            />
+            <OperationsAnalytics operations={analytics?.operations} loading={loading} />
           </div>
 
-          <div className="stat-card">
-            <div className="stat-icon purple">
-              <CalendarDays size={24} />
-            </div>
-            <div className="stat-info">
-              <h3>Yesterday's Activity</h3>
-              <h2>{analytics.yesterdayCount}</h2>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon green">
-              <TrendingUp size={24} />
-            </div>
-            <div className="stat-info">
-              <h3>Top Operation</h3>
-              <h2>{analytics.topOperations?.[0]?.action || "N/A"}</h2>
-            </div>
+          {/* Right Column (1fr) - Live Insights and System Errors */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <DashboardInsights 
+              kpis={analytics?.kpis} 
+              topRoutes={analytics?.topRoutes} 
+              errorCenter={analytics?.errorCenter}
+              loading={loading} 
+            />
+            <ErrorMonitor errorCenter={analytics?.errorCenter} loading={loading} />
           </div>
         </div>
-      )}
 
-      <div className="main-content-grid" style={{ display: 'block' }}>
-
-        <div className="top-operations-section">
-          <h2>All Operations</h2>
-          <div className="top-ops-list">
-            <div className="op-header" style={{ gridTemplateColumns: '50px 2fr 1fr 100px 100px' }}>
-              <span className="op-rank">#</span>
-              <span className="op-name">Operation</span>
-              <span className="op-name">Path</span>
-              <span className="op-count-label">Today</span>
-              <span className="op-count-label">Total</span>
-            </div>
-            {analytics?.topOperations?.map((op, index) => (
-              <div key={`${op.action}-${op.path}`} className="op-item" style={{ gridTemplateColumns: '50px 2fr 1fr 100px 100px' }}>
-                <span className="op-rank">{index + 1}</span>
-                <span className="op-name">{op.action}</span>
-                <span className="op-name">{op.path}</span>
-                <span className="op-count today">{op.todayCount}</span>
-                <span className="op-count total">{op.totalCount}</span>
-              </div>
-            ))}
-            {!analytics?.topOperations?.length && (
-              <p className="empty-state">No operations yet.</p>
-            )}
-          </div>
+        {/* Full-Width Bottom Section: Top Events */}
+        <div style={{ width: "100%", marginTop: "1.5rem" }}>
+          <TopEventsBarChart topEvents={analytics?.topEvents} loading={loading} />
         </div>
       </div>
     </div>
