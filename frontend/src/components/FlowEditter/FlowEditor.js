@@ -58,6 +58,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
           : node,
       ),
     );
+    logActivity("UPDATE_NODE_LABEL", { nodeId: id, text });
   };
 
   const updateResponse = (id, index, text) => {
@@ -76,6 +77,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
           : node,
       ),
     );
+    logActivity("UPDATE_NODE_RESPONSE", { nodeId: id, index, text });
   };
 
   const deleteNode = (id) => {
@@ -88,6 +90,7 @@ const FlowEditor = ({ flow_id, business_id }) => {
 
   const onConnect = (params) => {
     const { sourceHandle } = params;
+    logActivity("CONNECT_NODES", { source: params.source, target: params.target, sourceHandle });
 
     // If connecting to a full box, allow it (target should be a full node)
     if (!sourceHandle) {
@@ -148,9 +151,11 @@ const FlowEditor = ({ flow_id, business_id }) => {
           setNodes(updatedNodes);
           setEdges(data.edges);
           setFlowId(data._id); // Store document ID
+          logActivity("FETCH_FLOW_SUCCESS", { flowId: data._id });
         }
       } catch (error) {
         console.error("Error fetching flow:", error);
+        logActivity("FETCH_FLOW_ERROR", { error: error.message });
       }
     };
 

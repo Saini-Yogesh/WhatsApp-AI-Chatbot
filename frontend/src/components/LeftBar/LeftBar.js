@@ -24,9 +24,11 @@ const LeftBar = ({ flow_id, business_id }) => {
       setDescription(data.businessDescription || "");
       setAiResponses(data.aiResponses || []);
       setLoading(false);
+      logActivity("FETCH_BUSINESS_DETAILS_SUCCESS", { business_id: id });
     } catch (err) {
       setError("Error fetching business details. Please try again.");
       setLoading(false);
+      logActivity("FETCH_BUSINESS_DETAILS_ERROR", { business_id: id, error: err.message });
     }
   };
 

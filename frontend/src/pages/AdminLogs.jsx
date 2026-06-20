@@ -7,6 +7,7 @@ import {
   RefreshCw,
   Lock,
 } from "lucide-react";
+import { logActivity } from "../utils/logger";
 
 const AdminLogs = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -67,6 +68,10 @@ const AdminLogs = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    logActivity("ADMIN_LOGS_ACCESSED");
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
