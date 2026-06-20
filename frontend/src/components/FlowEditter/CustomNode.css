@@ -55,6 +55,8 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  min-width: 48px;
+  min-height: 48px;
 }
 
 .delete-btn:hover {
