@@ -4,7 +4,6 @@ export const logActivity = async (action, details = {}) => {
   try {
     const payload = {
       action,
-      details,
       path: window.location.pathname,
       user: "Anonymous", // User mentioned to record anonymously
     };

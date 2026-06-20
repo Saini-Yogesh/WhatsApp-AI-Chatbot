@@ -13,28 +13,15 @@ const AdminLogs = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
-  const [logs, setLogs] = useState([]);
   const [analytics, setAnalytics] = useState(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const fetchData = async (pageNumber = 1) => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const [logsRes, analyticsRes] = await Promise.all([
-        fetch(`http://localhost:7000/api/logs?page=${pageNumber}&limit=20`),
-        fetch(`http://localhost:7000/api/logs/analytics`),
-      ]);
-
-      const logsData = await logsRes.json();
+      const analyticsRes = await fetch(`http://localhost:7000/api/logs/analytics`);
       const analyticsData = await analyticsRes.json();
 
-      if (logsData.success) {
-        setLogs(logsData.logs);
-        setTotalPages(logsData.totalPages);
-        setPage(logsData.currentPage);
-      }
       if (analyticsData.success) {
         setAnalytics(analyticsData);
       }
@@ -75,10 +62,10 @@ const AdminLogs = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchData(page);
+      fetchData();
     }
     // eslint-disable-next-line
-  }, [page, isAuthenticated]);
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return (
@@ -116,7 +103,7 @@ const AdminLogs = () => {
         </div>
         <button
           className="refresh-btn"
-          onClick={() => fetchData(page)}
+          onClick={() => fetchData()}
           disabled={loading}
         >
           <RefreshCw className={loading ? "spin" : ""} size={18} /> Refresh Data
@@ -157,80 +144,23 @@ const AdminLogs = () => {
         </div>
       )}
 
-      <div className="main-content-grid">
-        <div className="logs-section">
-          <h2>Recent Logs</h2>
-          <div className="table-container">
-            <table className="logs-table">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Action</th>
-                  <th>Path</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.length > 0 ? (
-                  logs.map((log) => (
-                    <tr key={log._id}>
-                      <td className="time-cell">
-                        {new Date(log.timestamp).toLocaleString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })}
-                      </td>
-                      <td>
-                        <span className="badge">{log.action}</span>
-                      </td>
-                      <td className="path-cell">{log.path}</td>
-                      <td className="details-cell">
-                        <pre>{JSON.stringify(log.details, null, 2)}</pre>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="empty-state">
-                      No logs found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          <div className="pagination">
-            <button disabled={page <= 1} onClick={() => setPage(page - 1)}>
-              Previous
-            </button>
-            <span>
-              Page {page} of {totalPages || 1}
-            </span>
-            <button
-              disabled={page >= totalPages}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+      <div className="main-content-grid" style={{ display: 'block' }}>
 
         <div className="top-operations-section">
-          <h2>Top 10 Operations</h2>
+          <h2>All Operations</h2>
           <div className="top-ops-list">
-            <div className="op-header">
+            <div className="op-header" style={{ gridTemplateColumns: '50px 2fr 1fr 100px 100px' }}>
               <span className="op-rank">#</span>
               <span className="op-name">Operation</span>
+              <span className="op-name">Path</span>
               <span className="op-count-label">Today</span>
               <span className="op-count-label">Total</span>
             </div>
             {analytics?.topOperations?.map((op, index) => (
-              <div key={op.action} className="op-item">
+              <div key={`${op.action}-${op.path}`} className="op-item" style={{ gridTemplateColumns: '50px 2fr 1fr 100px 100px' }}>
                 <span className="op-rank">{index + 1}</span>
                 <span className="op-name">{op.action}</span>
+                <span className="op-name">{op.path}</span>
                 <span className="op-count today">{op.todayCount}</span>
                 <span className="op-count total">{op.totalCount}</span>
               </div>

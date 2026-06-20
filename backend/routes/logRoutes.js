@@ -5,8 +5,8 @@ const Log = require("../models/Log");
 // POST /api/logs - Create a new log
 router.post("/", async (req, res) => {
   try {
-    const { action, details, user, path } = req.body;
-    const newLog = new Log({ action, details, user, path });
+    const { action, path } = req.body;
+    const newLog = new Log({ action, path });
     await newLog.save();
     res.status(201).json({ success: true, message: "Log saved" });
   } catch (error) {
@@ -47,7 +47,7 @@ router.get("/analytics", async (req, res) => {
       Log.aggregate([
         {
           $group: {
-            _id: "$action",
+            _id: { action: "$action", path: "$path" },
             totalCount: { $sum: 1 },
             todayCount: {
               $sum: {
@@ -57,7 +57,6 @@ router.get("/analytics", async (req, res) => {
           },
         },
         { $sort: { totalCount: -1 } },
-        { $limit: 10 },
       ]),
     ]);
 
@@ -66,7 +65,8 @@ router.get("/analytics", async (req, res) => {
       todayCount,
       yesterdayCount,
       topOperations: topOperations.map((op) => ({
-        action: op._id,
+        action: op._id.action,
+        path: op._id.path,
         totalCount: op.totalCount,
         todayCount: op.todayCount,
       })),

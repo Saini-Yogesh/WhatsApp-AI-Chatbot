@@ -5,14 +5,6 @@ const logSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  details: {
-    type: mongoose.Schema.Types.Mixed,
-    default: {},
-  },
-  user: {
-    type: String,
-    default: "Anonymous",
-  },
   path: {
     type: String,
   },
