@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./AdminDashboard.module.css";
 import {
   ResponsiveContainer,
@@ -41,7 +41,12 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 const EventCharts = ({ overTime = [], distribution = [], topEvents = [], loading }) => {
-  if (loading) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (loading || !mounted) {
     return (
       <div className={styles.chartsGrid}>
         <div className={styles.card} style={{ height: "360px" }}>
@@ -157,7 +162,12 @@ const EventCharts = ({ overTime = [], distribution = [], topEvents = [], loading
 };
 
 export const TopEventsBarChart = ({ topEvents = [], loading }) => {
-  if (loading) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (loading || !mounted) {
     return (
       <div className={styles.card} style={{ height: "340px" }}>
         <div className={styles.skeleton} style={{ width: "150px", height: "20px", marginBottom: "2rem" }} />

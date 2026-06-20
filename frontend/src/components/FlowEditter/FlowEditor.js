@@ -11,6 +11,7 @@ import "reactflow/dist/style.css";
 import CustomNode from "./CustomNode";
 import "./FlowEditor.css";
 import { logActivity } from "../../utils/logger";
+import { toast } from "react-hot-toast";
 
 const nodeTypes = { custom: CustomNode };
 const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -120,10 +121,15 @@ const FlowEditor = ({ flow_id, business_id }) => {
         setFlowId(responseData.id); // Store ID for future updates
       }
 
-      alert(responseData.message);
+      if (responseData.success !== false) {
+        toast.success(responseData.message || "Flow saved successfully!");
+      } else {
+        toast.error(responseData.message || "Failed to save flow.");
+      }
       logActivity("SAVE_FLOW_SUCCESS", { flowId: responseData.id || flowId, nodesCount: nodes.length });
     } catch (error) {
       console.error("Error saving flow:", error);
+      toast.error("Failed to save flow. Please try again.");
       logActivity("SAVE_FLOW_ERROR", { error: error.message });
     }
     setLoading(false);

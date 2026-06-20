@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../components/admin/AdminDashboard.module.css";
 import { Lock, RefreshCw, Moon, Sun } from "lucide-react";
 import { logActivity } from "../utils/logger";
+import { toast } from "react-hot-toast";
 
 // Import custom dashboard sub-components
 import DashboardOverview from "../components/admin/DashboardOverview";
@@ -19,7 +20,7 @@ const AdminLogs = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = async (isManual = false) => {
     setLoading(true);
     try {
       const analyticsRes = await fetch(`http://localhost:7000/api/logs/analytics?range=${range}`);
@@ -27,9 +28,19 @@ const AdminLogs = () => {
 
       if (analyticsData.success) {
         setAnalytics(analyticsData);
+        if (isManual === true) {
+          toast.success("Dashboard data refreshed successfully!");
+        }
+      } else {
+        if (isManual === true) {
+          toast.error(analyticsData.error || "Failed to refresh dashboard data.");
+        }
       }
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
+      if (isManual === true) {
+        toast.error("Failed to refresh dashboard data. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -47,10 +58,13 @@ const AdminLogs = () => {
       const data = await res.json();
       if (data.success) {
         setIsAuthenticated(true);
+        toast.success("Welcome back, Admin!");
       } else {
+        localStorage.setItem("toast_error_message", data.error || "Access Denied: Incorrect Password!");
         window.location.replace("/");
       }
     } catch (err) {
+      localStorage.setItem("toast_error_message", err.message || "Failed to verify admin password.");
       window.location.replace("/");
     } finally {
       setLoading(false);
@@ -103,6 +117,7 @@ const AdminLogs = () => {
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
               autoFocus
               style={{
                 width: "100%",
@@ -170,7 +185,7 @@ const AdminLogs = () => {
           {/* Manual refresh button */}
           <button
             className={styles.actionBtn}
-            onClick={fetchData}
+            onClick={() => fetchData(true)}
             disabled={loading}
           >
             <RefreshCw className={loading ? styles.spin : ""} size={16} /> Refresh

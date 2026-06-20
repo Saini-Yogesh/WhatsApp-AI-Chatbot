@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./AdminDashboard.module.css";
 import { AlertCircle, ShieldAlert, CheckCircle } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 
 const ErrorMonitor = ({ errorCenter = {}, loading }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (loading) {
     return (
       <div className={styles.card}>
@@ -140,7 +145,7 @@ const ErrorMonitor = ({ errorCenter = {}, loading }) => {
         {/* Error Types Chart */}
         <div>
           <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "0.8125rem", color: "#94a3b8" }}>Errors by Action Type</h4>
-          {types.length > 0 ? (
+          {mounted && types.length > 0 ? (
             <div style={{ width: "100%", height: 130 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={types} layout="vertical" margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
@@ -159,6 +164,8 @@ const ErrorMonitor = ({ errorCenter = {}, loading }) => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
+          ) : types.length > 0 ? (
+            <div className={styles.skeleton} style={{ width: "100%", height: 130 }} />
           ) : (
             <div style={{
               height: 120,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "../LeftBar/LeftBar.css";
 import { logActivity } from "../../utils/logger";
+import { toast } from "react-hot-toast";
+import "../LeftBar/LeftBar.css";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 const LeftBar = ({ flow_id, business_id }) => {
@@ -26,13 +27,24 @@ const LeftBar = ({ flow_id, business_id }) => {
       setLoading(false);
       logActivity("FETCH_BUSINESS_DETAILS_SUCCESS", { business_id: id });
     } catch (err) {
-      setError("Error fetching business details. Please try again.");
+      toast.error("Error fetching chatbot details. Please try again.");
+      setError("Error fetching chatbot details. Please try again.");
       setLoading(false);
       logActivity("FETCH_BUSINESS_DETAILS_ERROR", { business_id: id, error: err.message });
     }
   };
 
   useEffect(() => {
+    const pendingToastSuccess = localStorage.getItem("toast_success_message");
+    if (pendingToastSuccess) {
+      toast.success(pendingToastSuccess);
+      localStorage.removeItem("toast_success_message");
+    }
+    const pendingToastError = localStorage.getItem("toast_error_message");
+    if (pendingToastError) {
+      toast.error(pendingToastError);
+      localStorage.removeItem("toast_error_message");
+    }
     if (business_id) {
       fetchBusinessDetails(business_id);
     }
@@ -60,10 +72,11 @@ const LeftBar = ({ flow_id, business_id }) => {
       }
       
       logActivity("UPDATE_BUSINESS_DETAILS", { name, description });
-
+      localStorage.setItem("toast_success_message", "Business details updated successfully!");
       window.location.reload();
     } catch (err) {
       logActivity("ERROR_BUSINESS_DETAILS", { error: err.message });
+      toast.error(err.message || "Submission failed. Please try again.");
       setError(err.message || "Submission failed. Please try again.");
     } finally {
       setLoading(false);
