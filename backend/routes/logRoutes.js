@@ -33,19 +33,29 @@ router.get("/analytics", async (req, res) => {
     const range = req.query.range || "7d";
     const now = new Date();
     
-    // Set up standard comparison times
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterdayStart = new Date(todayStart);
-    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
-    const dayBeforeYesterdayStart = new Date(yesterdayStart);
-    dayBeforeYesterdayStart.setDate(dayBeforeYesterdayStart.getDate() - 1);
+    // Helper to calculate the start of a day in Kolkata timezone (UTC+5:30)
+    const getKolkataStartOfDay = (date) => {
+      const adjusted = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+      return new Date(Date.UTC(adjusted.getUTCFullYear(), adjusted.getUTCMonth(), adjusted.getUTCDate()) - (5.5 * 60 * 60 * 1000));
+    };
 
-    const weekStart = new Date(todayStart);
-    weekStart.setDate(weekStart.getDate() - todayStart.getDay());
-    const lastWeekStart = new Date(weekStart);
-    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+    const getKolkataDateString = (date) => {
+      const adjusted = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+      return adjusted.toISOString().slice(0, 10);
+    };
 
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const todayStart = getKolkataStartOfDay(now);
+    const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
+    const dayBeforeYesterdayStart = new Date(yesterdayStart.getTime() - 24 * 60 * 60 * 1000);
+
+    // Get current Kolkata day of the week (0 = Sunday, 1 = Monday...)
+    const nowKolkata = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+    const dayOfWeek = nowKolkata.getUTCDay();
+
+    const weekStart = new Date(todayStart.getTime() - dayOfWeek * 24 * 60 * 60 * 1000);
+    const lastWeekStart = new Date(weekStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const monthStart = new Date(Date.UTC(nowKolkata.getUTCFullYear(), nowKolkata.getUTCMonth(), 1) - (5.5 * 60 * 60 * 1000));
     const last24hStart = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
     // Fetch baseline KPI count metrics
@@ -85,7 +95,7 @@ router.get("/analytics", async (req, res) => {
       ]),
       Log.aggregate([
         { $match: { timestamp: { $gte: todayStart } } },
-        { $project: { hour: { $hour: "$timestamp" } } },
+        { $project: { hour: { $hour: { date: "$timestamp", timezone: "Asia/Kolkata" } } } },
         { $group: { _id: "$hour", count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 1 }
@@ -112,13 +122,13 @@ router.get("/analytics", async (req, res) => {
       chartStartDate = yesterdayStart;
       isHourly = true;
     } else if (range === "7d") {
-      chartStartDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      chartStartDate = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
     } else if (range === "30d") {
-      chartStartDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      chartStartDate = new Date(todayStart.getTime() - 29 * 24 * 60 * 60 * 1000);
     } else if (range === "90d") {
-      chartStartDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+      chartStartDate = new Date(todayStart.getTime() - 89 * 24 * 60 * 60 * 1000);
     } else if (req.query.startDate) {
-      chartStartDate = new Date(req.query.startDate);
+      chartStartDate = getKolkataStartOfDay(new Date(req.query.startDate));
     }
 
     // End date boundary
@@ -141,8 +151,8 @@ router.get("/analytics", async (req, res) => {
         {
           $group: {
             _id: isHourly 
-              ? { $hour: "$timestamp" } 
-              : { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } },
+              ? { $hour: { date: "$timestamp", timezone: "Asia/Kolkata" } } 
+              : { $dateToString: { format: "%Y-%m-%d", date: "$timestamp", timezone: "Asia/Kolkata" } },
             total: { $sum: 1 },
             actions: { $addToSet: "$action" }
           }
@@ -174,8 +184,8 @@ router.get("/analytics", async (req, res) => {
         {
           $group: {
             _id: {
-              day: { $dayOfWeek: "$timestamp" }, // 1 (Sunday) to 7 (Saturday)
-              hour: { $hour: "$timestamp" }
+              day: { $dayOfWeek: { date: "$timestamp", timezone: "Asia/Kolkata" } }, // 1 (Sunday) to 7 (Saturday)
+              hour: { $hour: { date: "$timestamp", timezone: "Asia/Kolkata" } }
             },
             count: { $sum: 1 }
           }
@@ -218,11 +228,15 @@ router.get("/analytics", async (req, res) => {
     } else {
       // For multi-day view, pre-fill all dates
       const dayMap = {};
-      let tempDate = new Date(chartStartDate);
+      let tempDate = new Date(chartStartDate.getTime());
       while (tempDate <= chartEndDate) {
-        const dateStr = tempDate.toISOString().slice(0, 10);
-        dayMap[dateStr] = { label: tempDate.toLocaleDateString(undefined, { month: "short", day: "numeric" }), total: 0, unique: 0 };
-        tempDate.setDate(tempDate.getDate() + 1);
+        const dateStr = getKolkataDateString(tempDate);
+        dayMap[dateStr] = { 
+          label: tempDate.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "Asia/Kolkata" }), 
+          total: 0, 
+          unique: 0 
+        };
+        tempDate.setTime(tempDate.getTime() + 24 * 60 * 60 * 1000);
       }
       rawOverTime.forEach(item => {
         if (dayMap[item._id]) {
