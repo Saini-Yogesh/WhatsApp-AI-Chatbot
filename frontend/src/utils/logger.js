@@ -1,4 +1,5 @@
-const API_BASE = "http://localhost:7000/api";
+const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:7000";
+const API_BASE = `${BASE_URL}/api`;
 
 export const logActivity = async (action, details = {}) => {
   try {

@@ -12,6 +12,8 @@ import OperationsAnalytics from "../components/admin/OperationsAnalytics";
 import ErrorMonitor from "../components/admin/ErrorMonitor";
 import DashboardInsights from "../components/admin/DashboardInsights";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:7000";
+
 const AdminLogs = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
@@ -23,7 +25,7 @@ const AdminLogs = () => {
   const fetchData = async (isManual = false) => {
     setLoading(true);
     try {
-      const analyticsRes = await fetch(`http://localhost:7000/api/logs/analytics?range=${range}`);
+      const analyticsRes = await fetch(`${BASE_URL}/api/logs/analytics?range=${range}`);
       const analyticsData = await analyticsRes.json();
 
       if (analyticsData.success) {
@@ -50,7 +52,7 @@ const AdminLogs = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:7000/api/logs/verify-admin", {
+      const res = await fetch(`${BASE_URL}/api/logs/verify-admin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
