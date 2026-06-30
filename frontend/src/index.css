@@ -1,22 +1,22 @@
 :root {
-  /* WhatsApp Green Theme */
-  --bg-app: #0f4c36; /* Original Forest Green / WhatsApp Green */
-  --bg-sidebar: #0f4c36;
-  --bg-canvas: #efeae2; /* Classic WhatsApp wallpaper tone */
+  /* WhatsApp Green Dark Theme */
+  --bg-app: #0f172a; /* Slate 900 */
+  --bg-sidebar: #0b0f19; /* Very dark slate/blue-black */
+  --bg-canvas: #090d16; /* Deep dark background for node canvas */
 
-  --bg-card: #ffffff;
-  --bg-chat-bubble: #dcf8c6;
-  --bg-input: #ffffff;
+  --bg-card: rgba(30, 41, 59, 0.65); /* Translucent dark slate */
+  --bg-chat-bubble: #005c4b; /* WhatsApp dark mode chat bubble */
+  --bg-input: #1e293b; /* Slate 800 input background */
 
-  --text-primary: #ffffff; /* White text on green background */
-  --text-secondary: #a7f3d0; /* Light green/gray for secondary text */
-  --text-inverse: #111b21; /* Dark text for inside cards/nodes */
-  --text-inverse-secondary: #54656f;
+  --text-primary: #ffffff; /* White text */
+  --text-secondary: #94a3b8; /* Slate 400 */
+  --text-inverse: #f8fafc; /* White text for cards/inputs */
+  --text-inverse-secondary: #94a3b8; /* Slate 400 for card subtitles */
 
-  --accent-primary: #25d366; /* Bright Green */
+  --accent-primary: #25d366; /* Bright WhatsApp Green */
   --accent-hover: #128c7e; /* Dark Teal */
-  --border-color: #064e3b; /* Dark Green border */
-  --border-inverse: #d1d5db; /* Light gray border for cards */
+  --border-color: rgba(37, 211, 102, 0.3); /* Transparent green border */
+  --border-inverse: rgba(255, 255, 255, 0.08); /* Dark mode subtle card border */
   --focus-ring: rgba(37, 211, 102, 0.4);
 
   --font-sans:
@@ -35,9 +35,94 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Rotating Border Glowing Buttons */
+.btn-glow-border {
+  position: relative;
+  padding: 1.5px; /* The width of the glowing border */
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  display: inline-flex;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.12);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.btn-glow-border::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 20%,
+    var(--accent-primary), /* WhatsApp Green */
+    #00af9c, /* Teal theme color */
+    transparent 80%
+  );
+  transform: translate(-50%, -50%);
+  animation: border-rotate-glow 4s linear infinite;
+  z-index: 0;
+}
+
+@keyframes border-rotate-glow {
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.btn-glow-inner {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-sidebar); /* Matches dark page/sidebar backgrounds */
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6.5px; /* Slightly smaller than parent to match corner curve */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Hover states */
+.btn-glow-border:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.25);
+}
+
+.btn-glow-border:hover .btn-glow-inner {
+  background: #111827; /* Lighter slate on hover */
+  color: var(--accent-primary); /* WhatsApp green text on hover */
+}
+
+/* Specific style override for Navbar button */
+.nav-glow {
+  padding: 1px;
+  border-radius: 6px;
+}
+.nav-glow .btn-glow-inner {
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  background: var(--bg-app); /* Match navbar background */
+}
+.nav-glow:hover .btn-glow-inner {
+  background: #1e293b;
 }

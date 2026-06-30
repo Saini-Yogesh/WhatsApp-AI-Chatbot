@@ -22,7 +22,7 @@
 .node-header {
   display: flex;
   align-items: center;
-  background-color: #f8fafc;
+  background-color: rgba(255, 255, 255, 0.03);
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-inverse);
   margin-bottom: 16px;
@@ -78,9 +78,15 @@
   transition: all 0.2s;
   outline: none;
   box-sizing: border-box;
-  resize: vertical;
-  min-height: 70px;
+  resize: none;
+  min-height: 80px;
   line-height: 1.4;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.question-input::-webkit-scrollbar {
+  display: none;
 }
 
 .question-input:focus {
@@ -141,10 +147,10 @@
 .main-handle {
   width: 12px;
   height: 12px;
-  background-color: #3b82f6; /* Blue input handle */
+  background-color: var(--accent-primary);
   border: 2px solid var(--bg-card);
   left: -7px;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
 .response-handle {

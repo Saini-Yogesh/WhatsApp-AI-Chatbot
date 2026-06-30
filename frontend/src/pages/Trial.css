@@ -1,0 +1,31 @@
+/* Trial.css */
+.app-trial {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-trial .page-content {
+  height: calc(100vh - 52px);
+  overflow: hidden;
+}
+
+.home-container {
+  display: flex;
+  height: 100%;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--bg-app);
+}
+
+.flow-editor {
+  flex-grow: 1;
+  background-color: var(--bg-canvas);
+  overflow: hidden; /* Prevent extra scrollbars in React Flow editor */
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+    height: 100%;
+  }
+}

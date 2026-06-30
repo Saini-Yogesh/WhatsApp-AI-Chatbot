@@ -2,7 +2,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
 }
 
@@ -33,7 +33,7 @@
   fill: var(--text-inverse) !important;
 }
 .react-flow__controls-button:hover {
-  background-color: #f8fafc !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Sidebar Buttons */
@@ -80,7 +80,7 @@
 
 @media (max-width: 768px) {
   .flow-container {
-    height: 60vh;
+    height: 60%;
     width: 100% !important;
   }
   .flow-continer-navbar {
