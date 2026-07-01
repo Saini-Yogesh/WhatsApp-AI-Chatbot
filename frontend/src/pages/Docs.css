@@ -181,14 +181,14 @@
   flex-direction: column;
   gap: 2rem;
   position: relative;
-  padding-left: 1.5rem;
+  padding-left: 0.5rem;
 }
 
 .timeline::before {
   content: "";
   position: absolute;
   top: 10px;
-  left: 10px;
+  left: 19px;
   bottom: 10px;
   width: 2px;
   background: rgba(255, 255, 255, 0.05);
@@ -196,11 +196,13 @@
 
 .timeline-item {
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .timeline-marker {
   position: absolute;
-  left: -20px;
+  left: 10px;
   top: 2px;
   width: 20px;
   height: 20px;
@@ -213,6 +215,11 @@
   justify-content: center;
   font-size: 0.7rem;
   font-weight: 700;
+  z-index: 2;
+}
+
+.timeline-content {
+  padding-left: 2.25rem;
 }
 
 .timeline-content h4 {
@@ -386,5 +393,41 @@
   .logic-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .docs-container {
+    padding: 0 1rem;
+  }
+  .docs-hero h1 {
+    font-size: 1.75rem;
+  }
+  .docs-hero p {
+    font-size: 0.95rem;
+  }
+  .timeline {
+    padding-left: 0.5rem;
+  }
+  .timeline::before {
+    left: 18px;
+  }
+  .timeline-marker {
+    left: 10px;
+    width: 18px;
+    height: 18px;
+    font-size: 0.65rem;
+  }
+  .timeline-content {
+    padding-left: 2.1rem;
+  }
+  .timeline-content h4 {
+    font-size: 1rem;
+  }
+  .code-block-wrapper pre {
+    padding: 0.8rem;
+  }
+  .code-block-header {
+    padding: 0.5rem 0.8rem;
   }
 }

@@ -15,10 +15,10 @@ export default function Docs() {
 
   useEffect(() => {
     logActivity("DOCS_PAGE_ACCESSED");
-    document.title = "Developer Setup Guide & API Documentation | WhatsAppFlows";
+    document.title = "Meta Webhook Developer Guide & API Setup | WhatsAppFlows";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute("content", "Learn how to connect visual chatbot JSON schemas to the Meta WhatsApp Cloud API. Webhook signature verification middle-ware and multi-page routing tutorials.");
+      metaDescription.setAttribute("content", "Step-by-step developer tutorial for connecting visual chatbot flows to Meta WhatsApp Business Cloud API. Setup secure webhooks, verification tokens, and message payloads.");
     }
   }, []);
 

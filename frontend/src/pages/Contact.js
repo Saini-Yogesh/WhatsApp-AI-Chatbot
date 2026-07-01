@@ -25,10 +25,10 @@ export default function Contact() {
 
   useEffect(() => {
     logActivity("CONTACT_PAGE_ACCESSED");
-    document.title = "Get WhatsApp Business API Integration | WhatsAppFlows";
+    document.title = "Get WhatsApp Business API Integration & Support | WhatsAppFlows";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute("content", "Request managed hosting, phone line verification, and CRM integrations for your visual chatbot workflows. Starter, Growth, and Enterprise SLAs.");
+      metaDescription.setAttribute("content", "Consult with our engineers to integrate custom visual chatbots with CRMs, Twilio, or Meta Cloud API. Explore starter, growth, and enterprise pricing SLA options.");
     }
   }, []);
 

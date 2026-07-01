@@ -17,10 +17,10 @@ import "./Home.css";
 export default function Home() {
   useEffect(() => {
     logActivity("LANDING_PAGE_ACCESSED");
-    document.title = "WhatsAppFlows | Visual No-Code WhatsApp Chatbot Builder";
+    document.title = "WhatsAppFlows | Visual No-Code WhatsApp Chatbot Builder & AI Simulator";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute("content", "Design, test, and deploy visual conversational workflows for WhatsApp Business API with zero coding. Draw question flows, customize answers, and export JSON schemas.");
+      metaDescription.setAttribute("content", "Design, test, and deploy visual conversational workflows for WhatsApp Business API with zero coding. Draw question flows, simulate chats, and auto-generate Gemini AI answers.");
     }
   }, []);
 

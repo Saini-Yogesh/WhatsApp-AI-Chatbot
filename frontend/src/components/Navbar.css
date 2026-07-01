@@ -215,3 +215,12 @@
     padding: 0.8rem 1rem;
   }
 }
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.6rem 1rem;
+  }
+  .navbar-links {
+    padding: 1rem;
+  }
+}

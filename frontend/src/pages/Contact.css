@@ -549,3 +549,20 @@
     gap: 2.5rem;
   }
 }
+
+@media (max-width: 480px) {
+  .contact-container {
+    padding: 3rem 1.25rem;
+    gap: 2.5rem;
+  }
+  .contact-info h1 {
+    font-size: 2rem !important;
+  }
+  .contact-description {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .contact-form-wrapper {
+    padding: 1.5rem;
+  }
+}

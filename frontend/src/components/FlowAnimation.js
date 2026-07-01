@@ -26,7 +26,8 @@ export default function FlowAnimation() {
 
   return (
     <div className="hero-visual">
-      <div className="mock-canvas">
+      <div className="mock-canvas-wrapper">
+        <div className="mock-canvas">
         <div className="mock-canvas-header">
           <div className="dot red"></div>
           <div className="dot yellow"></div>
@@ -233,6 +234,7 @@ export default function FlowAnimation() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

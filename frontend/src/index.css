@@ -46,7 +46,7 @@ code {
 /* Rotating Border Glowing Buttons */
 .btn-glow-border {
   position: relative;
-  padding: 1.5px; /* The width of the glowing border */
+  padding: 1px; /* The width of the glowing border */
   background: transparent;
   border-radius: 8px;
   overflow: hidden;
@@ -114,7 +114,7 @@ code {
 
 /* Specific style override for Navbar button */
 .nav-glow {
-  padding: 1px;
+  padding: 0.75px;
   border-radius: 6px;
 }
 .nav-glow .btn-glow-inner {

@@ -6,19 +6,28 @@
   align-items: center;
 }
 
+.mock-canvas-wrapper {
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1.15;
+  position: relative;
+}
+
 .mock-canvas {
   background: rgba(15, 23, 42, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  width: 100%;
-  max-width: 500px;
-  aspect-ratio: 1.15;
+  width: 500px;
+  height: 435px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
   transition: all 0.3s;
 }
 
@@ -448,18 +457,29 @@
 }
 
 /* Dynamic scaling for mobile responsiveness */
-@media (max-width: 520px) {
+@media (max-width: 540px) {
+  .mock-canvas-wrapper {
+    max-width: 400px; /* 500px * 0.8 */
+  }
   .mock-canvas {
     transform: scale(0.8);
-    transform-origin: center top;
-    margin-bottom: -70px;
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 440px) {
+  .mock-canvas-wrapper {
+    max-width: 325px; /* 500px * 0.65 */
+  }
   .mock-canvas {
-    transform: scale(0.68);
-    transform-origin: center top;
-    margin-bottom: -110px;
+    transform: scale(0.65);
+  }
+}
+
+@media (max-width: 360px) {
+  .mock-canvas-wrapper {
+    max-width: 275px; /* 500px * 0.55 */
+  }
+  .mock-canvas {
+    transform: scale(0.55);
   }
 }

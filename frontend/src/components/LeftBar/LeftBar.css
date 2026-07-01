@@ -26,10 +26,43 @@
 @media (max-width: 768px) {
   .left-bar {
     width: 100%;
-    height: 40%;
-    padding: 20px;
+    height: 100% !important;
+    overflow-y: auto !important;
+    padding: 15px;
     border-right: none;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: none;
+  }
+  .left-bar h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .business-form {
+    gap: 10px;
+  }
+  .business-form input,
+  .business-form textarea {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .business-form textarea {
+    min-height: 80px;
+  }
+  .business-form button {
+    padding: 10px;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+  .ai-responses {
+    margin-top: 15px;
+    gap: 8px;
+  }
+  .ai-responses h3 {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  .ai-responses li {
+    padding: 10px 12px;
+    font-size: 13px;
   }
 }
 

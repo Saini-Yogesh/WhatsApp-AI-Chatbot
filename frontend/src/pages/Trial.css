@@ -1,17 +1,40 @@
 /* Trial.css */
 .app-trial {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   overflow: hidden;
 }
 
 .app-trial .page-content {
-  height: calc(100vh - 52px);
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.trial-wrapper {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.trial-tabs {
+  display: none;
+}
+
+.tab-panel {
+  display: contents;
 }
 
 .home-container {
   display: flex;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   width: 100vw;
   overflow: hidden;
   background-color: var(--bg-app);
@@ -24,8 +47,96 @@
 }
 
 @media (max-width: 768px) {
+  .app-trial {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  .app-trial .page-content {
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .trial-wrapper {
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .trial-tabs {
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--bg-sidebar);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    z-index: 100;
+  }
+
+  .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 14px 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    outline: none;
+  }
+
+  .tab-btn.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+    background: rgba(37, 211, 102, 0.04);
+  }
+
   .home-container {
     flex-direction: column;
+    flex: 1 !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .tab-panel {
+    display: block;
+    width: 100%;
     height: 100%;
+  }
+
+  .tab-panel.hidden-panel {
+    display: none !important;
+  }
+
+  .tab-panel.active-panel {
+    display: block;
+    height: 100%;
+  }
+
+  /* Reset LeftBar height and overflow for mobile panel */
+  .left-bar {
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    border-right: none !important;
+    border-bottom: none !important;
+  }
+
+  /* Reset flow-container to take full panel height */
+  .flow-container {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .flow-editor {
+    width: 100% !important;
+    height: 100% !important;
   }
 }
